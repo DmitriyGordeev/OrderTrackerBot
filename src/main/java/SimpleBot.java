@@ -10,6 +10,8 @@ public class SimpleBot extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
 
+            System.out.println(update.getMessage().getText());
+
             String username = update.getMessage().getChat().getUserName();
             long userId   = update.getMessage().getChat().getId();
             String message_text = update.getMessage().getText();
