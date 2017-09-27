@@ -76,15 +76,15 @@ public class Bot extends TelegramLongPollingBot {
                 }
                 else {
                     response = "На " + table_filename_noext + " файла не существует";
-                    return;
                 }
             }
+            else {
 
-
-            // make record into csv table:
-            String record = userId + ";" + username + ";" + message_text + ";" + dateFormat.format(date) + "\n";
-            handleFile(table_filename_noext + ".csv", record);
-            response = "Записал";
+                // make record into csv table:
+                String record = userId + ";" + username + ";" + message_text + ";" + dateFormat.format(date) + "\n";
+                handleFile(table_filename_noext + ".csv", record);
+                response = "Записал";
+            }
 
 
             // send response to user:
