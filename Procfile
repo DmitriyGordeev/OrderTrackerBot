@@ -1,0 +1,1 @@
+java -jar target/myexecutable.jar
