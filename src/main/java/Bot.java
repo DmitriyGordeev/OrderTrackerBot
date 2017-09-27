@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,6 +45,23 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    private String getFileForUpload(String dateValue, long chat_id) {
+
+        String response = "";
+        File file = new File(dateValue + ".csv");
+        if(file.exists()) {
+            try {
+                sendDocUploadingAFile(chat_id, file, "Статистика за " + dateValue + ":\n ");
+            }
+            catch(TelegramApiException e) { e.printStackTrace(); }
+        }
+        else {
+            response = "На " + dateValue + " файла не существует";
+        }
+
+        return response;
+    }
+
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -73,18 +91,33 @@ public class Bot extends TelegramLongPollingBot {
             else if(request.equals("/settings")) {
 
             }
-            else if(request.equals("/getfile"))
+            else if(request.contains("/getfile"))
             {
-                File file = new File(table_filename_noext + ".csv");
-                if(file.exists()) {
-                    try {
-                        sendDocUploadingAFile(chat_id, file, "Статистика за " + table_filename_noext + ":\n ");
-                        return;
-                    }
-                    catch(TelegramApiException e) { e.printStackTrace(); }
+                String[] words = request.split("\\s+");
+                if(words.length == 1) {
+                    response = getFileForUpload(table_filename_noext, chat_id);
                 }
-                else {
-                    response = "На " + table_filename_noext + " файла не существует";
+                else if(words.length == 2) {
+
+                    if(words[1].equals("вчера")) {
+                        Date d = new Date(date.getTime() - 24 * 3600 * 1000);
+                        String filename = dateFormatDateOnly.format(d);
+                        response = getFileForUpload(filename, chat_id);
+                    }
+                    else {
+                        SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+                        try {
+                            Date d = parser.parse(words[1]);
+                            response = getFileForUpload(words[1], chat_id);
+                        }
+                        catch(ParseException e) {
+                            e.printStackTrace();
+                            response =
+                                    "Неправильный формат даты\n" +
+                                    "Необходимо: dd-MM-yyyy\n" +
+                                    "Например: /getfile 01-01-2017";
+                        }
+                    }
                 }
             }
             else {
