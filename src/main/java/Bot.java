@@ -49,7 +49,7 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
 
             String username = update.getMessage().getChat().getUserName();
-            String message_text = update.getMessage().getText();
+            String request = update.getMessage().getText();
             long userId   = update.getMessage().getChat().getId();
             long chat_id = update.getMessage().getChatId();
 
@@ -62,10 +62,22 @@ public class Bot extends TelegramLongPollingBot {
 
             String table_filename_noext = dateFormatDateOnly.format(date);
 
-            // '/getfile' command
-            // sending .csv table if requested and if it exists
-            if(message_text.equals("/getfile"))
+            if(request.equals("/start")) {
+                response = "Приветствую!\n" +
+                        "Я собираю информацию по заказам на текущий день.\n" +
+                        "Просто пишите сюда сумму продажи, например '250'";
+
+            }
+            else if(request.equals("/help")) {
+
+            }
+            else if(request.equals("/settings")) {
+
+            }
+            else if(request.equals("/getfile"))
             {
+                // '/getfile' command
+                // sending .csv table if requested and if it exists
                 File file = new File(table_filename_noext + ".csv");
                 if(file.exists()) {
                     try {
@@ -81,7 +93,7 @@ public class Bot extends TelegramLongPollingBot {
             else {
 
                 // make record into csv table:
-                String record = userId + ";" + username + ";" + message_text + ";" + dateFormat.format(date) + "\n";
+                String record = userId + ";" + username + ";" + request + ";" + dateFormat.format(date) + "\n";
                 handleFile(table_filename_noext + ".csv", record);
                 response = "Записал";
             }
