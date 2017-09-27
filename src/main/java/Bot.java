@@ -56,8 +56,8 @@ public class Bot extends TelegramLongPollingBot {
             String response = "";
 
             // Reading associated file:
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            DateFormat dateFormatDateOnly = new SimpleDateFormat("yyyy-MM-dd");
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            DateFormat dateFormatDateOnly = new SimpleDateFormat("dd-MM-yyyy");
             Date date = new Date();
 
             String table_filename_noext = dateFormatDateOnly.format(date);
@@ -66,7 +66,6 @@ public class Bot extends TelegramLongPollingBot {
                 response = "Приветствую!\n" +
                         "Я собираю информацию по заказам на текущий день.\n" +
                         "Просто пишите сюда сумму продажи, например '250'";
-
             }
             else if(request.equals("/help")) {
 
@@ -76,8 +75,6 @@ public class Bot extends TelegramLongPollingBot {
             }
             else if(request.equals("/getfile"))
             {
-                // '/getfile' command
-                // sending .csv table if requested and if it exists
                 File file = new File(table_filename_noext + ".csv");
                 if(file.exists()) {
                     try {
