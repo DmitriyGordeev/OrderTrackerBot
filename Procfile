@@ -1,1 +1,1 @@
-java -jar target/myexecutable.jar
+ls target/
