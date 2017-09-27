@@ -6,7 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Started Bot!");
+        System.out.println("Bot has been launched!");
 
         // Initialize Api Context
         ApiContextInitializer.init();
