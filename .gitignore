@@ -2,3 +2,4 @@
 fileio-test.txt
 target/
 out/
+*.csv

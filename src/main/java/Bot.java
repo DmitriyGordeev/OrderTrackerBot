@@ -3,6 +3,13 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.awt.image.ImagingOpException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -10,12 +17,37 @@ public class Bot extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
 
+            /// Std staff:
             System.out.println(update.getMessage().getText());
 
             String username = update.getMessage().getChat().getUserName();
             long userId   = update.getMessage().getChat().getId();
             String message_text = update.getMessage().getText();
             long chat_id = update.getMessage().getChatId();
+
+
+            /// Reading associated file:
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            DateFormat dateFormatDateOnly = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+
+            String record = userId + ";" + username + ";" + message_text + ";" + dateFormat.format(date) + "\n";
+
+            String fileContent = "";
+            try {
+                fileContent = Fileio.readfile(dateFormatDateOnly.format(date) + ".csv");
+                fileContent = fileContent + record;
+                Fileio.writefile(dateFormatDateOnly.format(date) + ".csv", fileContent);
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+                try {
+                    Fileio.writefile(dateFormatDateOnly.format(date) + ".csv", record);
+                }
+                catch(IOException exc) {
+                    exc.printStackTrace();
+                }
+            }
 
             message_text += "\n username: " + username + " \n userId: " + userId;
 

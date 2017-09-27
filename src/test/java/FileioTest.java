@@ -1,6 +1,8 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class FileioTest {
 
     @Test
@@ -8,8 +10,17 @@ public class FileioTest {
         String filename = "fileio-test.txt";
         String fileContent = "Message!";
 
-        Fileio.writefile(filename, fileContent);
-        String content = Fileio.readfile(filename);
+        try {
+            Fileio.writefile(filename, fileContent);
+        }
+        catch(IOException e) { e.printStackTrace(); }
+
+        String content = "";
+        try {
+            content = Fileio.readfile(filename);
+        }
+        catch(IOException e) { e.printStackTrace(); }
+
 
         System.out.println("expected: " + fileContent);
         System.out.println("-----------------------------------");
