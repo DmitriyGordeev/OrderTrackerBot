@@ -4,7 +4,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 
-public class SimpleBot extends TelegramLongPollingBot {
+public class Bot extends TelegramLongPollingBot {
 
     public void onUpdateReceived(Update update) {
 
@@ -32,10 +32,10 @@ public class SimpleBot extends TelegramLongPollingBot {
     }
 
     public String getBotUsername() {
-        return "dimas_test_bot";
+        return "OrderTrackerBot_bot";
     }
 
     public String getBotToken() {
-        return "415598199:AAHFEgk3tjCeQmZ7YDBmH90XC0PYN0PyuSw";
+        return "445107190:AAGSZJHeTLrzcq2AAFGVuMn20C1xEFU6A5U";
     }
 }
