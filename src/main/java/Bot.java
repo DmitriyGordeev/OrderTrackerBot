@@ -45,6 +45,37 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public float getDaySum(String filename) {
+
+        float day_total = 0;
+        try {
+            String content = Fileio.readfile(filename);
+            String[] rows = content.split("\n");
+
+            for(String s : rows)
+            {
+                // TODO: change column-take method:
+                String[] cols = s.split(";");
+
+                // TODO: remove hardcode 'cols.length == 4'
+                // TODO: and cols[2]
+                if(cols.length == 4) {
+                    float value = UpdateParser.parsePrice(cols[2]);
+                    if(value != -1) {
+                        day_total += value;
+                    }
+                }
+            }
+
+            return day_total;
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     private String getFileForUpload(String dateValue, long chat_id) {
 
         String response = "";
@@ -90,6 +121,9 @@ public class Bot extends TelegramLongPollingBot {
             }
             else if(request.equals("/settings")) {
 
+            }
+            else if(request.equals("/daysum")) {
+                response = Float.toString(getDaySum(table_filename_noext + ".csv"));
             }
             else if(request.contains("/getfile"))
             {

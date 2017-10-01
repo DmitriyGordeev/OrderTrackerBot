@@ -3,3 +3,4 @@ fileio-test.txt
 target/
 out/
 *.csv
+!getDaySum_test_file.csv
