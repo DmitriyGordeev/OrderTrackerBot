@@ -112,7 +112,8 @@ public class Bot extends TelegramLongPollingBot {
             String table_filename_noext = dateFormatDateOnly.format(date);
 
             if(request.equals("/start")) {
-                response = "Приветствую!\n" +
+                response =
+                        "Приветствую!\n" +
                         "Я собираю информацию по заказам на текущий день.\n" +
                         "Просто пишите сюда сумму продажи, например '250'";
             }
@@ -123,7 +124,7 @@ public class Bot extends TelegramLongPollingBot {
 
             }
             else if(request.equals("/daysum")) {
-                response = Float.toString(getDaySum(table_filename_noext + ".csv"));
+                response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
             }
             else if(request.contains("/getfile"))
             {
