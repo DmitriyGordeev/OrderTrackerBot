@@ -4,7 +4,6 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -110,7 +109,7 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
-    public void sendMsg (Message message, String text) {
+    public void sendMessageWithKeyboard(Message message, String text) {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
@@ -127,15 +126,15 @@ public class Bot extends TelegramLongPollingBot {
 
         // Первая строчка клавиатуры
         KeyboardRow keyboardFirstRow = new KeyboardRow();
-        keyboardFirstRow.add("/getfile");
+        keyboardFirstRow.add("Файл-отчет за сегодня");
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardSecondRow.add("/daysum");
+        keyboardSecondRow.add("Выручка за сегодня");
 
         // Третья строчка клавиатуры
         KeyboardRow keyboardThirdRow = new KeyboardRow();
-        keyboardThirdRow.add("/monthsum");
+        keyboardThirdRow.add("Выручка за этот месяц");
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
@@ -157,6 +156,20 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public String messageCommand(String message) {
+        if(message.equals("Файл-отчет за сегодня")) {
+            return "/getfile";
+        }
+        else if(message.equals("Выручка за сегодня")) {
+            return "/daysum";
+        }
+        else if(message.equals("Выручка за этот месяц")) {
+            return "/monthsum";
+        }
+
+        return "";
+    }
+
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -165,6 +178,8 @@ public class Bot extends TelegramLongPollingBot {
             String request = update.getMessage().getText();
             long userId   = update.getMessage().getChat().getId();
             long chat_id = update.getMessage().getChatId();
+
+            request = messageCommand(request);
 
             String response = "";
 
@@ -194,7 +209,7 @@ public class Bot extends TelegramLongPollingBot {
             else if(request.equals("/daysum")) {
 
                 try {
-                    response = "Сумма за день: "
+                    response = "Выручка за день: "
                             + Float.toString(getDaySum(folderName + "/" + table_filename_noext + ".csv"));
                 }
                 catch(IOException e) {
@@ -202,7 +217,7 @@ public class Bot extends TelegramLongPollingBot {
                 }
             }
             else if(request.equals("/monthsum")) {
-                response = "Сумма за " + folderName + ": " + Float.toString(getMonthSum(folderName));
+                response = "Выручка за " + folderName + ": " + Float.toString(getMonthSum(folderName));
             }
             else if(request.contains("/getfile")) {
 
@@ -247,7 +262,7 @@ public class Bot extends TelegramLongPollingBot {
             }
 
 
-            sendMsg(update.getMessage(), response);
+            sendMessageWithKeyboard(update.getMessage(), response);
         }
 
     }
