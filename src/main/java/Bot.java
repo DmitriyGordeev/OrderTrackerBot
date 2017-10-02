@@ -195,6 +195,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    // transforms human-readable button caption into /command
     public String messageCommand(String message) {
         if(message.equals("Файл-отчет за сегодня")) {
             return "/getfile";
