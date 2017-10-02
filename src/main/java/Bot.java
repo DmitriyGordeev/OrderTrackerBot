@@ -194,7 +194,8 @@ public class Bot extends TelegramLongPollingBot {
             else if(request.equals("/daysum")) {
 
                 try {
-                    response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
+                    response = "Сумма за день: "
+                            + Float.toString(getDaySum(folderName + "/" + table_filename_noext + ".csv"));
                 }
                 catch(IOException e) {
                     response = "Файл за " + table_filename_noext + " не найден";
@@ -207,7 +208,7 @@ public class Bot extends TelegramLongPollingBot {
 
                 String[] words = request.split("\\s+");
                 if(words.length == 1) {
-                    response = getFileForUpload(table_filename_noext, chat_id);
+                    response = getFileForUpload(folderName + "/" + table_filename_noext, chat_id);
                 }
                 else if(words.length == 2) {
 
