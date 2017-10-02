@@ -45,35 +45,28 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public float getDaySum(String filename) {
+    public float getDaySum(String filename) throws IOException {
 
         float day_total = 0;
-        try {
-            String content = Fileio.readfile(filename);
-            String[] rows = content.split("\n");
+        String content = Fileio.readfile(filename);
+        String[] rows = content.split("\n");
 
-            for(String s : rows)
-            {
-                // TODO: change column-take method:
-                String[] cols = s.split(";");
+        for(String s : rows)
+        {
+            // TODO: change column-take method:
+            String[] cols = s.split(";");
 
-                // TODO: remove hardcode 'cols.length == 4'
-                // TODO: and cols[2]
-                if(cols.length == 4) {
-                    float value = UpdateParser.parsePrice(cols[2]);
-                    if(value != -1) {
-                        day_total += value;
-                    }
+            // TODO: remove hardcode 'cols.length == 4'
+            // TODO: and cols[2]
+            if(cols.length == 4) {
+                float value = UpdateParser.parsePrice(cols[2]);
+                if(value != -1) {
+                    day_total += value;
                 }
             }
-
-            return day_total;
-        }
-        catch(IOException e) {
-            e.printStackTrace();
         }
 
-        return 0;
+        return day_total;
     }
 
     private String getFileForUpload(String dateValue, long chat_id) {
@@ -124,10 +117,16 @@ public class Bot extends TelegramLongPollingBot {
 
             }
             else if(request.equals("/daysum")) {
-                response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
+
+                try {
+                    response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
+                }
+                catch(IOException e) {
+                    response = "Файл за " + table_filename_noext + " не найден";
+                }
             }
-            else if(request.contains("/getfile"))
-            {
+            else if(request.contains("/getfile")) {
+
                 String[] words = request.split("\\s+");
                 if(words.length == 1) {
                     response = getFileForUpload(table_filename_noext, chat_id);
