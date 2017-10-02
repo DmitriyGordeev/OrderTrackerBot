@@ -1,17 +1,20 @@
 import org.apache.commons.io.FileUtils;
 import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -107,104 +110,154 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
+    /// TESTING THIS METHOD
+    public void sendMsg (Message message, String text) {
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+
+        // Создаем клавиуатуру
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        // Создаем список строк клавиатуры
+        ArrayList<KeyboardRow> keyboard = new ArrayList<KeyboardRow>();
+
+        // Первая строчка клавиатуры
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        // Добавляем кнопки в первую строчку клавиатуры
+        keyboardFirstRow.add("/daysum");
+        keyboardFirstRow.add("Команда 2");
+
+        // Вторая строчка клавиатуры
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+        // Добавляем кнопки во вторую строчку клавиатуры
+        keyboardSecondRow.add("Команда 3");
+        keyboardSecondRow.add("Команда 4");
+
+        // Добавляем все строчки клавиатуры в список
+        keyboard.add(keyboardFirstRow);
+        keyboard.add(keyboardSecondRow);
+
+        // и устанваливаем этот список нашей клавиатуре
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setReplyToMessageId(message.getMessageId());
+
+
+        sendMessage.setText(text);
+        try {
+            sendMessage(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
 
-            String username = update.getMessage().getChat().getUserName();
-            String request = update.getMessage().getText();
-            long userId   = update.getMessage().getChat().getId();
-            long chat_id = update.getMessage().getChatId();
+//            String username = update.getMessage().getChat().getUserName();
+//            String request = update.getMessage().getText();
+//            long userId   = update.getMessage().getChat().getId();
+//            long chat_id = update.getMessage().getChatId();
+//
+//            String response = "";
+//
+//            // Reading associated file:
+//            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+//            DateFormat dateFormatDateOnly = new SimpleDateFormat("dd-MM-yyyy");
+//            DateFormat dateFormatNoDay = new SimpleDateFormat("MM-yyyy");
+//
+//            Date date = new Date();
+//
+//            String table_filename_noext = dateFormatDateOnly.format(date);
+//            String folderName = dateFormatNoDay.format(date);
+//
+//            // TODO: refactor to switch - case:
+//            if(request.equals("/start")) {
+//                response =
+//                        "Приветствую!\n" +
+//                        "Я собираю информацию по заказам на текущий день.\n" +
+//                        "Просто пишите сюда сумму продажи, например '250'";
+//            }
+//            else if(request.equals("/help")) {
+//
+//            }
+//            else if(request.equals("/settings")) {
+//
+//            }
+//            else if(request.equals("/daysum")) {
+//
+//                try {
+//                    response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
+//                }
+//                catch(IOException e) {
+//                    response = "Файл за " + table_filename_noext + " не найден";
+//                }
+//            }
+//            else if(request.equals("/monthsum")) {
+//                response = "Сумма за " + folderName + ": " + Float.toString(getMonthSum(folderName));
+//            }
+//            else if(request.contains("/getfile")) {
+//
+//                String[] words = request.split("\\s+");
+//                if(words.length == 1) {
+//                    response = getFileForUpload(table_filename_noext, chat_id);
+//                }
+//                else if(words.length == 2) {
+//
+//                    if(words[1].equals("вчера")) {
+//                        Date d = new Date(date.getTime() - 24 * 3600 * 1000);
+//                        String filename = dateFormatDateOnly.format(d);
+//                        response = getFileForUpload(filename, chat_id);
+//                    }
+//                    else {
+//                        SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+//                        try {
+//                            Date d = parser.parse(words[1]);
+//                            response = getFileForUpload(words[1], chat_id);
+//                        }
+//                        catch(ParseException e) {
+//                            e.printStackTrace();
+//                            response =
+//                                    "Неправильный формат даты\n" +
+//                                    "Необходимо: dd-MM-yyyy\n" +
+//                                    "Например: /getfile 01-01-2017";
+//                        }
+//                    }
+//                }
+//            }
+//            else {
+//
+//                // check if such date-folder exists:
+//                File folder = new File(folderName);
+//                if(!folder.exists() || !folder.isDirectory())
+//                    folder.mkdir();
+//
+//                // make record into csv table:
+//                String record = userId + ";" + username + ";" + request + ";" + dateFormat.format(date) + "\n";
+//                makeRecord(folderName + "/" + table_filename_noext + ".csv", record);
+//                response = "Записал";
+//            }
+//
+//
+//            // send response to user:
+//            SendMessage message = new SendMessage()
+//                    .setChatId(chat_id)
+//                    .setText(response);
+//            try {
+//                sendMessage(message);
+//            } catch (TelegramApiException e) {
+//                e.printStackTrace();
+//            }
 
-            String response = "";
-
-            // Reading associated file:
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            DateFormat dateFormatDateOnly = new SimpleDateFormat("dd-MM-yyyy");
-            DateFormat dateFormatNoDay = new SimpleDateFormat("MM-yyyy");
-
-            Date date = new Date();
-
-            String table_filename_noext = dateFormatDateOnly.format(date);
-            String folderName = dateFormatNoDay.format(date);
-
-            // TODO: refactor to switch - case:
-            if(request.equals("/start")) {
-                response =
-                        "Приветствую!\n" +
-                        "Я собираю информацию по заказам на текущий день.\n" +
-                        "Просто пишите сюда сумму продажи, например '250'";
-            }
-            else if(request.equals("/help")) {
-
-            }
-            else if(request.equals("/settings")) {
-
-            }
-            else if(request.equals("/daysum")) {
-
-                try {
-                    response = "Сумма за день: " + Float.toString(getDaySum(table_filename_noext + ".csv"));
-                }
-                catch(IOException e) {
-                    response = "Файл за " + table_filename_noext + " не найден";
-                }
-            }
-            else if(request.equals("/monthsum")) {
-                response = "Сумма за " + folderName + ": " + Float.toString(getMonthSum(folderName));
-            }
-            else if(request.contains("/getfile")) {
-
-                String[] words = request.split("\\s+");
-                if(words.length == 1) {
-                    response = getFileForUpload(table_filename_noext, chat_id);
-                }
-                else if(words.length == 2) {
-
-                    if(words[1].equals("вчера")) {
-                        Date d = new Date(date.getTime() - 24 * 3600 * 1000);
-                        String filename = dateFormatDateOnly.format(d);
-                        response = getFileForUpload(filename, chat_id);
-                    }
-                    else {
-                        SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
-                        try {
-                            Date d = parser.parse(words[1]);
-                            response = getFileForUpload(words[1], chat_id);
-                        }
-                        catch(ParseException e) {
-                            e.printStackTrace();
-                            response =
-                                    "Неправильный формат даты\n" +
-                                    "Необходимо: dd-MM-yyyy\n" +
-                                    "Например: /getfile 01-01-2017";
-                        }
-                    }
-                }
-            }
-            else {
-
-                // check if such date-folder exists:
-                File folder = new File(folderName);
-                if(!folder.exists() || !folder.isDirectory())
-                    folder.mkdir();
-
-                // make record into csv table:
-                String record = userId + ";" + username + ";" + request + ";" + dateFormat.format(date) + "\n";
-                makeRecord(folderName + "/" + table_filename_noext + ".csv", record);
-                response = "Записал";
-            }
-
-
-            // send response to user:
-            SendMessage message = new SendMessage()
-                    .setChatId(chat_id)
-                    .setText(response);
-            try {
-                sendMessage(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            sendMsg(update.getMessage(), "Команда старт");
         }
 
     }
@@ -216,4 +269,6 @@ public class Bot extends TelegramLongPollingBot {
     public String getBotToken() {
         return "445107190:AAGSZJHeTLrzcq2AAFGVuMn20C1xEFU6A5U";
     }
+
+
 }
