@@ -4,10 +4,10 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.awt.image.ImagingOpException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,7 +26,7 @@ public class Bot extends TelegramLongPollingBot {
         sendDocument(sendDocumentRequest);
     }
 
-    private void handleFile(String filename, String record) {
+    private void makeRecord(String filename, String record) {
 
         String fileContent = "";
         try {
@@ -100,9 +100,12 @@ public class Bot extends TelegramLongPollingBot {
             // Reading associated file:
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             DateFormat dateFormatDateOnly = new SimpleDateFormat("dd-MM-yyyy");
+            DateFormat dateFormatNoDay = new SimpleDateFormat("MM-yyyy");
+
             Date date = new Date();
 
             String table_filename_noext = dateFormatDateOnly.format(date);
+            String folderName = dateFormatNoDay.format(date);
 
             if(request.equals("/start")) {
                 response =
@@ -156,9 +159,14 @@ public class Bot extends TelegramLongPollingBot {
             }
             else {
 
+                // check if such date-folder exists:
+                File folder = new File(folderName);
+                if(!folder.exists() || !folder.isDirectory())
+                    folder.mkdir();
+
                 // make record into csv table:
                 String record = userId + ";" + username + ";" + request + ";" + dateFormat.format(date) + "\n";
-                handleFile(table_filename_noext + ".csv", record);
+                makeRecord(folderName + "/" + table_filename_noext + ".csv", record);
                 response = "Записал";
             }
 
