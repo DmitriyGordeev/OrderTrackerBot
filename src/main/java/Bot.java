@@ -92,18 +92,53 @@ public class Bot extends TelegramLongPollingBot {
         return month_total;
     }
 
-    private String getFileForUpload(String dateValue, long chat_id) {
+    private String getDayFileForUpload(String dateValue, long chat_id) {
 
         String response = "";
         File file = new File(dateValue + ".csv");
         if(file.exists()) {
             try {
-                sendDocUploadingAFile(chat_id, file, "Статистика за " + dateValue + ":\n ");
+                sendDocUploadingAFile(chat_id, file, "Статистика за " + dateValue + "\n ");
             }
             catch(TelegramApiException e) { e.printStackTrace(); }
         }
         else {
             response = "На " + dateValue + " файла не существует";
+        }
+
+        return response;
+    }
+
+    private String getMonthFileForUpload(String monthFolder, long chat_id) {
+
+        String response = "";
+        File file = new File(monthFolder);
+
+        String[] ext = {"csv"};
+        List<File> files = (List<File>) FileUtils.listFiles(file, ext, true);
+
+        // concantenate all .csv files into one
+        String totalContentOfTables = "";
+        for(File f : files) {
+            try {
+                String content = Fileio.readfile(f.getPath());
+                totalContentOfTables += content;
+            } catch (IOException e) { }
+        }
+
+        // write total content into new file:
+        try {
+            Fileio.writefile(monthFolder + "/" + monthFolder + ".csv", totalContentOfTables);
+            try {
+                File f = new File(monthFolder + "/" + monthFolder + ".csv");
+                sendDocUploadingAFile(chat_id, f, "Статистика за " + monthFolder + "\n ");
+            }
+            catch(TelegramApiException e) {
+                response = "Не удалось отправить файл-отчет";
+            }
+        }
+        catch(IOException e) {
+            response = "Не удалось создать файл-отчет";
         }
 
         return response;
@@ -136,10 +171,14 @@ public class Bot extends TelegramLongPollingBot {
         KeyboardRow keyboardThirdRow = new KeyboardRow();
         keyboardThirdRow.add("Выручка за этот месяц");
 
+        KeyboardRow keyboardFourthRow = new KeyboardRow();
+        keyboardFourthRow.add("Файл-отчет за этот месяц");
+
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         keyboard.add(keyboardThirdRow);
+        keyboard.add(keyboardFourthRow);
 
         // и устанваливаем этот список нашей клавиатуре
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -165,6 +204,9 @@ public class Bot extends TelegramLongPollingBot {
         }
         else if(message.equals("Выручка за этот месяц")) {
             return "/monthsum";
+        }
+        else if(message.equals("Файл-отчет за этот месяц")) {
+            return "/monthfile";
         }
 
         return "";
@@ -206,6 +248,9 @@ public class Bot extends TelegramLongPollingBot {
             else if(request.equals("/settings")) {
 
             }
+            else if(request.equals("/monthfile")) {
+                response = getMonthFileForUpload(folderName, chat_id);
+            }
             else if(request.equals("/daysum")) {
 
                 try {
@@ -223,20 +268,20 @@ public class Bot extends TelegramLongPollingBot {
 
                 String[] words = request.split("\\s+");
                 if(words.length == 1) {
-                    response = getFileForUpload(folderName + "/" + table_filename_noext, chat_id);
+                    response = getDayFileForUpload(folderName + "/" + table_filename_noext, chat_id);
                 }
                 else if(words.length == 2) {
 
                     if(words[1].equals("вчера")) {
                         Date d = new Date(date.getTime() - 24 * 3600 * 1000);
                         String filename = dateFormatDateOnly.format(d);
-                        response = getFileForUpload(filename, chat_id);
+                        response = getDayFileForUpload(filename, chat_id);
                     }
                     else {
                         SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
                         try {
                             Date d = parser.parse(words[1]);
-                            response = getFileForUpload(words[1], chat_id);
+                            response = getDayFileForUpload(words[1], chat_id);
                         }
                         catch(ParseException e) {
                             e.printStackTrace();
