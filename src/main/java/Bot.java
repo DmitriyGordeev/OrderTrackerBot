@@ -80,6 +80,7 @@ public class Bot extends TelegramLongPollingBot {
         List<File> files = (List<File>) FileUtils.listFiles(folder, ext, true);
 
         for(File f : files) {
+
             try {
                 month_total += getDaySum(f.getPath());
             }
@@ -150,7 +151,7 @@ public class Bot extends TelegramLongPollingBot {
                 }
             }
             else if(request.equals("/monthsum")) {
-
+                response = "Сумма за " + folderName + ": " + Float.toString(getMonthSum(folderName));
             }
             else if(request.contains("/getfile")) {
 

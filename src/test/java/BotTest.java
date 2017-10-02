@@ -16,11 +16,16 @@ public class BotTest {
         catch(IOException e) {}
     }
 
-
     @Test
     public void getMonthSum_notEmptyFileList() {
         Bot bot = new Bot();
         Assert.assertEquals(10000, bot.getMonthSum(resourcesPrefixPath + "10-2017"), 0.001);
+    }
+
+    @Test
+    public void getMonthSum_emptyFileList() {
+        Bot bot = new Bot();
+        Assert.assertEquals(0, bot.getMonthSum(resourcesPrefixPath + "09-2017"), 0.001);
     }
 
 }
