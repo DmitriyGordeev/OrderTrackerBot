@@ -1,3 +1,4 @@
+import org.apache.commons.io.FileUtils;
 import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -12,6 +13,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
 public class Bot extends TelegramLongPollingBot {
@@ -69,6 +71,24 @@ public class Bot extends TelegramLongPollingBot {
         return day_total;
     }
 
+    public float getMonthSum(String monthFolderName) {
+
+        float month_total = 0;
+        File folder = new File(monthFolderName);
+
+        String[] ext = {"csv"};
+        List<File> files = (List<File>) FileUtils.listFiles(folder, ext, true);
+
+        for(File f : files) {
+            try {
+                month_total += getDaySum(f.getPath());
+            }
+            catch(IOException e) {}
+        }
+
+        return month_total;
+    }
+
     private String getFileForUpload(String dateValue, long chat_id) {
 
         String response = "";
@@ -107,6 +127,7 @@ public class Bot extends TelegramLongPollingBot {
             String table_filename_noext = dateFormatDateOnly.format(date);
             String folderName = dateFormatNoDay.format(date);
 
+            // TODO: refactor to switch - case:
             if(request.equals("/start")) {
                 response =
                         "Приветствую!\n" +
@@ -127,6 +148,9 @@ public class Bot extends TelegramLongPollingBot {
                 catch(IOException e) {
                     response = "Файл за " + table_filename_noext + " не найден";
                 }
+            }
+            else if(request.equals("/monthsum")) {
+
             }
             else if(request.contains("/getfile")) {
 
