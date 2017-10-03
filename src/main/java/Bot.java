@@ -230,6 +230,77 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    private String daysumCommand(String request, String dateNoDay, String fulldate) {
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1)
+        {
+            try {
+                response = "Выручка за день: "
+                        + Float.toString(getDaySum(dateNoDay + "/" + fulldate + ".csv"));
+            }
+            catch(IOException e) {
+                response = "Файл за " + fulldate + " не найден";
+            }
+        }
+        else if(words.length == 2)
+        {
+            SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+            try {
+                Date d = parser.parse(words[1]);
+                String custom_date_folder = reformateDate(words[1],
+                        "dd-MM-yyyy",
+                        "MM-yyyy");
+
+                try {
+                    response = "Выручка за " + words[1] + ":\n" +
+                            Float.toString(getDaySum( custom_date_folder + "/" + words[1] + ".csv"));
+                }
+                catch(IOException e) {
+                    response = "Файл за " + words[1] + " не найден";
+                }
+            }
+            catch(ParseException e) {
+                e.printStackTrace();
+                response =
+                        "Неправильный формат даты\n" +
+                                "Необходимо: dd-MM-yyyy\n" +
+                                "Например: /daysum 01-01-2017";
+            }
+        }
+
+        return response;
+    }
+
+
+    private String monthSumCommand(String request, String dateNoDay) {
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1) {
+            response = "Выручка за " + dateNoDay + ": \n" + Float.toString(getMonthSum(dateNoDay));
+        }
+        else if(words.length == 2)
+        {
+            SimpleDateFormat parser = new SimpleDateFormat("MM-yyyy");
+            try {
+                Date d = parser.parse(words[1]);
+                response = "Выручка за " + words[1] + ": \n" + Float.toString(getMonthSum(words[1]));
+            }
+            catch(ParseException e) {
+                e.printStackTrace();
+                response =
+                        "Неправильный формат даты\n" +
+                                "Необходимо: dd-MM-yyyy\n" +
+                                "Например: '/monthsum 01-2017' - выручка за январь 2017";
+            }
+        }
+
+        return response;
+    }
+
+
     public void sendMessageWithKeyboard(Message message, String text) {
 
         SendMessage sendMessage = new SendMessage();
@@ -333,7 +404,15 @@ public class Bot extends TelegramLongPollingBot {
                         "Просто пишите сюда сумму продажи, например '250'";
             }
             else if(request.equals("/help")) {
-
+                response = "Доступны следующие команды:\n\n" +
+                        "/daysum - выручка за сегодня\n\n" +
+                        "/daysum 01-09-2017 - выручка за указаную дату\n\n" +
+                        "/getfile - файл-отчет по сегодняшним продажам\n\n" +
+                        "/getfile 01-09-2017 - файл-отчет за указаную дату, например 1 сентября\n\n" +
+                        "/monthsum - выручка за текущий месяц\n\n" +
+                        "/monthsum 09-2017 - выручка за указаный месяц\n\n" +
+                        "/monthfile - файл-отчет по текущему месяцу\n\n" +
+                        "/monthfile 09-2017 - файл-отчет за указаный месяц\n\n";
             }
             else if(request.equals("/settings")) {
 
@@ -342,65 +421,10 @@ public class Bot extends TelegramLongPollingBot {
                 response = monthFileCommand(request, folderName, chat_id);
             }
             else if(request.contains("/daysum")) {
-
-                String[] words = request.split("\\s+");
-                if(words.length == 1)
-                {
-                    try {
-                        response = "Выручка за день: "
-                                + Float.toString(getDaySum(folderName + "/" + table_filename_noext + ".csv"));
-                    }
-                    catch(IOException e) {
-                        response = "Файл за " + table_filename_noext + " не найден";
-                    }
-                }
-                else if(words.length == 2)
-                {
-                    SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
-                    try {
-                        Date d = parser.parse(words[1]);
-                        String custom_date_folder = reformateDate(words[1],
-                                "dd-MM-yyyy",
-                                "MM-yyyy");
-
-                        try {
-                            response = "Выручка за " + words[1] + ":\n" +
-                                    Float.toString(getDaySum( custom_date_folder + "/" + words[1] + ".csv"));
-                        }
-                        catch(IOException e) {
-                            response = "Файл за " + words[1] + " не найден";
-                        }
-                    }
-                    catch(ParseException e) {
-                        e.printStackTrace();
-                        response =
-                                "Неправильный формат даты\n" +
-                                        "Необходимо: dd-MM-yyyy\n" +
-                                        "Например: /daysum 01-01-2017";
-                    }
-                }
+                response = daysumCommand(request, folderName, table_filename_noext);
             }
             else if(request.contains("/monthsum")) {
-
-                String[] words = request.split("\\s+");
-                if(words.length == 1) {
-                    response = "Выручка за " + folderName + ": \n" + Float.toString(getMonthSum(folderName));
-                }
-                else if(words.length == 2)
-                {
-                    SimpleDateFormat parser = new SimpleDateFormat("MM-yyyy");
-                    try {
-                        Date d = parser.parse(words[1]);
-                        response = "Выручка за " + words[1] + ": \n" + Float.toString(getMonthSum(words[1]));
-                    }
-                    catch(ParseException e) {
-                        e.printStackTrace();
-                        response =
-                                "Неправильный формат даты\n" +
-                                        "Необходимо: dd-MM-yyyy\n" +
-                                        "Например: '/monthsum 01-2017' - выручка за январь 2017";
-                    }
-                }
+                response = monthSumCommand(request, folderName);
             }
             else if(request.contains("/getfile")) {
                 response = dayFileCommand(request, date, chat_id);
