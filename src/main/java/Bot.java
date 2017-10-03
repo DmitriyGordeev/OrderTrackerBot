@@ -285,14 +285,43 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
             }
-            else if(request.equals("/daysum")) {
+            else if(request.contains("/daysum")) {
 
-                try {
-                    response = "Выручка за день: "
-                            + Float.toString(getDaySum(folderName + "/" + table_filename_noext + ".csv"));
+                String[] words = request.split("\\s+");
+                if(words.length == 1)
+                {
+                    try {
+                        response = "Выручка за день: "
+                                + Float.toString(getDaySum(folderName + "/" + table_filename_noext + ".csv"));
+                    }
+                    catch(IOException e) {
+                        response = "Файл за " + table_filename_noext + " не найден";
+                    }
                 }
-                catch(IOException e) {
-                    response = "Файл за " + table_filename_noext + " не найден";
+                else if(words.length == 2)
+                {
+                    SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+                    try {
+                        Date d = parser.parse(words[1]);
+                        String custom_date_folder = reformateDate(words[1],
+                                "dd-MM-yyyy",
+                                "MM-yyyy");
+
+                        try {
+                            response = "Выручка за " + words[1] + ":\n" +
+                                    Float.toString(getDaySum( custom_date_folder + "/" + words[1] + ".csv"));
+                        }
+                        catch(IOException e) {
+                            response = "Файл за " + words[1] + " не найден";
+                        }
+                    }
+                    catch(ParseException e) {
+                        e.printStackTrace();
+                        response =
+                                "Неправильный формат даты\n" +
+                                        "Необходимо: dd-MM-yyyy\n" +
+                                        "Например: /daysum 01-01-2017";
+                    }
                 }
             }
             else if(request.equals("/monthsum")) {
