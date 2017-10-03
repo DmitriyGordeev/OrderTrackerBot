@@ -81,6 +81,10 @@ public class Bot extends TelegramLongPollingBot {
         float month_total = 0;
         File folder = new File(monthFolderName);
 
+        if(!folder.exists()) {
+            return 0;
+        }
+
         String[] ext = {"csv"};
         List<File> files = (List<File>) FileUtils.listFiles(folder, ext, true);
 
@@ -324,8 +328,27 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
             }
-            else if(request.equals("/monthsum")) {
-                response = "Выручка за " + folderName + ": " + Float.toString(getMonthSum(folderName));
+            else if(request.contains("/monthsum")) {
+
+                String[] words = request.split("\\s+");
+                if(words.length == 1) {
+                    response = "Выручка за " + folderName + ": \n" + Float.toString(getMonthSum(folderName));
+                }
+                else if(words.length == 2)
+                {
+                    SimpleDateFormat parser = new SimpleDateFormat("MM-yyyy");
+                    try {
+                        Date d = parser.parse(words[1]);
+                        response = "Выручка за " + words[1] + ": \n" + Float.toString(getMonthSum(words[1]));
+                    }
+                    catch(ParseException e) {
+                        e.printStackTrace();
+                        response =
+                                "Неправильный формат даты\n" +
+                                        "Необходимо: dd-MM-yyyy\n" +
+                                        "Например: '/monthsum 01-2017' - выручка за январь 2017";
+                    }
+                }
             }
             else if(request.contains("/getfile")) {
 
