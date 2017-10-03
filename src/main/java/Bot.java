@@ -301,7 +301,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    public void sendMessageWithKeyboard(Message message, String text) {
+    private SendMessage setupKeyboard(long chat_id) {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
@@ -339,17 +339,10 @@ public class Bot extends TelegramLongPollingBot {
 
         // и устанваливаем этот список нашей клавиатуре
         replyKeyboardMarkup.setKeyboard(keyboard);
+        sendMessage.setChatId(chat_id);
+//        sendMessage.setReplyToMessageId(message.getMessageId());
 
-        sendMessage.setChatId(message.getChatId().toString());
-        sendMessage.setReplyToMessageId(message.getMessageId());
-
-
-        sendMessage.setText(text);
-        try {
-            sendMessage(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        return sendMessage;
     }
 
 
@@ -382,6 +375,7 @@ public class Bot extends TelegramLongPollingBot {
             long userId   = update.getMessage().getChat().getId();
             long chat_id = update.getMessage().getChatId();
 
+            SendMessage sendMessage = setupKeyboard(chat_id);
             request = messageCommand(request);
 
             String response = "";
@@ -443,7 +437,12 @@ public class Bot extends TelegramLongPollingBot {
             }
 
 
-            sendMessageWithKeyboard(update.getMessage(), response);
+            sendMessage.setText(response);
+            try {
+                sendMessage(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
 
     }
