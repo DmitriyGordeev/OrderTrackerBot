@@ -157,6 +157,79 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    private String monthFileCommand(String request, String dateNoDay, long chat_id) {
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1) {
+            response = getMonthFileForUpload(dateNoDay, chat_id);
+        }
+        else if(words.length == 2)
+        {
+            // custom month
+            // example '/monthfile 10-2017'
+            try {
+                        /* TODO: refactor inputFormat here! */
+                String custom_month_folder = reformateDate(words[1], "MM-yyyy", "MM-yyyy");
+                response = getMonthFileForUpload(custom_month_folder, chat_id);
+            }
+            catch(ParseException e) {
+                response =
+                        "Неправильный формат даты\n" +
+                                "Необходимо: dd-MM-yyyy\n" +
+                                "Например: /monthfile 01-2017";
+            }
+        }
+
+        return response;
+
+    }
+
+
+    private String dayFileCommand(String request, Date date, long chat_id) {
+
+        SimpleDateFormat fullDate = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dateNoDay = new SimpleDateFormat("MM-yyyy");
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1) {
+            response = getDayFileForUpload(dateNoDay.format(date) + "/" + fullDate.format(date), chat_id);
+        }
+        else if(words.length == 2)
+        {
+            // custom date
+            // example '/getfile 02-10-2017'
+
+            if(words[1].equals("вчера")) {
+                Date d = new Date(date.getTime() - 24 * 3600 * 1000);
+                String filename = fullDate.format(d);
+                response = getDayFileForUpload(filename, chat_id);
+            }
+            else {
+                SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+                try {
+                    Date d = parser.parse(words[1]);
+                    String custom_date_folder = reformateDate(words[1],
+                            "dd-MM-yyyy",
+                            "MM-yyyy");
+
+                    response = getDayFileForUpload( custom_date_folder + "/" + words[1], chat_id);
+                }
+                catch(ParseException e) {
+                    e.printStackTrace();
+                    response =
+                            "Неправильный формат даты\n" +
+                                    "Необходимо: dd-MM-yyyy\n" +
+                                    "Например: /getfile 01-01-2017";
+                }
+            }
+        }
+
+        return response;
+    }
+
+
     public void sendMessageWithKeyboard(Message message, String text) {
 
         SendMessage sendMessage = new SendMessage();
@@ -266,28 +339,7 @@ public class Bot extends TelegramLongPollingBot {
 
             }
             else if(request.contains("/monthfile")) {
-
-                String[] words = request.split("\\s+");
-                if(words.length == 1) {
-                    response = getMonthFileForUpload(folderName, chat_id);
-                }
-                else if(words.length == 2)
-                {
-                    // custom month
-                    // example '/monthfile 10-2017'
-
-                    try {
-                        /* TODO: refactor inputFormat here! */
-                        String custom_month_folder = reformateDate(words[1], "MM-yyyy", "MM-yyyy");
-                        response = getMonthFileForUpload(custom_month_folder, chat_id);
-                    }
-                    catch(ParseException e) {
-                        response =
-                                "Неправильный формат даты\n" +
-                                        "Необходимо: dd-MM-yyyy\n" +
-                                        "Например: /monthfile 01-2017";
-                    }
-                }
+                response = monthFileCommand(request, folderName, chat_id);
             }
             else if(request.contains("/daysum")) {
 
@@ -351,40 +403,7 @@ public class Bot extends TelegramLongPollingBot {
                 }
             }
             else if(request.contains("/getfile")) {
-
-                String[] words = request.split("\\s+");
-                if(words.length == 1) {
-                    response = getDayFileForUpload(folderName + "/" + table_filename_noext, chat_id);
-                }
-                else if(words.length == 2)
-                {
-                    // custom date
-                    // example '/getfile 02-10-2017'
-
-                    if(words[1].equals("вчера")) {
-                        Date d = new Date(date.getTime() - 24 * 3600 * 1000);
-                        String filename = dateFormatDateOnly.format(d);
-                        response = getDayFileForUpload(filename, chat_id);
-                    }
-                    else {
-                        SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
-                        try {
-                            Date d = parser.parse(words[1]);
-                            String custom_date_folder = reformateDate(words[1],
-                                    "dd-MM-yyyy",
-                                    "MM-yyyy");
-
-                            response = getDayFileForUpload( custom_date_folder + "/" + words[1], chat_id);
-                        }
-                        catch(ParseException e) {
-                            e.printStackTrace();
-                            response =
-                                    "Неправильный формат даты\n" +
-                                    "Необходимо: dd-MM-yyyy\n" +
-                                    "Например: /getfile 01-01-2017";
-                        }
-                    }
-                }
+                response = dayFileCommand(request, date, chat_id);
             }
             else {
 
