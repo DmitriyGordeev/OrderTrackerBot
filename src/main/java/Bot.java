@@ -118,6 +118,9 @@ public class Bot extends TelegramLongPollingBot {
 
         String response = "";
         File file = new File(monthFolder);
+        if(!file.exists()) {
+            return "Записи на " + monthFolder + " не найдены";
+        }
 
         String[] ext = {"csv"};
         List<File> files = (List<File>) FileUtils.listFiles(file, ext, true);
@@ -260,8 +263,6 @@ public class Bot extends TelegramLongPollingBot {
             }
             else if(request.contains("/monthfile")) {
 
-                /// response = getMonthFileForUpload(folderName, chat_id);
-
                 String[] words = request.split("\\s+");
                 if(words.length == 1) {
                     response = getMonthFileForUpload(folderName, chat_id);
@@ -277,17 +278,12 @@ public class Bot extends TelegramLongPollingBot {
                         response = getMonthFileForUpload(custom_month_folder, chat_id);
                     }
                     catch(ParseException e) {
-                        e.printStackTrace();
                         response =
                                 "Неправильный формат даты\n" +
                                         "Необходимо: dd-MM-yyyy\n" +
-                                        "Например: /getfile 01-01-2017";
+                                        "Например: /monthfile 01-2017";
                     }
                 }
-
-
-
-
             }
             else if(request.equals("/daysum")) {
 
