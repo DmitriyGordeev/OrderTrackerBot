@@ -30,6 +30,7 @@ public class Bot extends TelegramLongPollingBot {
         sendDocument(sendDocumentRequest);
     }
 
+
     private void makeRecord(String filename, String record) {
 
         String fileContent = "";
@@ -48,6 +49,7 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
     }
+
 
     public float getDaySum(String filename) throws IOException {
 
@@ -72,6 +74,7 @@ public class Bot extends TelegramLongPollingBot {
 
         return day_total;
     }
+
 
     public float getMonthSum(String monthFolderName) {
 
@@ -277,7 +280,10 @@ public class Bot extends TelegramLongPollingBot {
                 if(words.length == 1) {
                     response = getDayFileForUpload(folderName + "/" + table_filename_noext, chat_id);
                 }
-                else if(words.length == 2) {
+                else if(words.length == 2)
+                {
+                    // custom date
+                    // example '/getfile 02-10-2017'
 
                     if(words[1].equals("вчера")) {
                         Date d = new Date(date.getTime() - 24 * 3600 * 1000);
@@ -288,7 +294,11 @@ public class Bot extends TelegramLongPollingBot {
                         SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
                         try {
                             Date d = parser.parse(words[1]);
-                            response = getDayFileForUpload(folderName + "/" + words[1], chat_id);
+                            String custom_date_folder = reformateDate(words[1],
+                                    "dd-MM-yyyy",
+                                    "MM-yyyy");
+
+                            response = getDayFileForUpload( custom_date_folder + "/" + words[1], chat_id);
                         }
                         catch(ParseException e) {
                             e.printStackTrace();
@@ -327,6 +337,17 @@ public class Bot extends TelegramLongPollingBot {
 
     public String getBotToken() {
         return "445107190:AAGSZJHeTLrzcq2AAFGVuMn20C1xEFU6A5U";
+    }
+
+
+    /* transforms dateString into newFormat style: */
+    public String reformateDate(String dateString, String inputFormat, String newformat) throws ParseException {
+
+        DateFormat dateFormat = new SimpleDateFormat(inputFormat);
+        Date date = dateFormat.parse(dateString);
+
+        dateFormat = new SimpleDateFormat(newformat);
+        return dateFormat.format(date);
     }
 
 
