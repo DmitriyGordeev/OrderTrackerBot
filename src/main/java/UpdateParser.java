@@ -4,8 +4,8 @@ import java.util.regex.Pattern;
 
 public class UpdateParser {
 
-    public static float parsePrice(String str)
-    {
+    public static float parsePrice(String str) {
+
         String regex = "[0-9]+(\\.[0-9]+)?";
         Matcher m = Pattern.compile(regex).matcher(str);
 
@@ -25,7 +25,5 @@ public class UpdateParser {
 
         return -1;
     }
-
-
 
 }
