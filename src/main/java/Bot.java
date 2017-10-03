@@ -92,6 +92,7 @@ public class Bot extends TelegramLongPollingBot {
         return month_total;
     }
 
+
     private String getDayFileForUpload(String dateValue, long chat_id) {
 
         String response = "";
@@ -108,6 +109,7 @@ public class Bot extends TelegramLongPollingBot {
 
         return response;
     }
+
 
     private String getMonthFileForUpload(String monthFolder, long chat_id) {
 
@@ -143,6 +145,7 @@ public class Bot extends TelegramLongPollingBot {
 
         return response;
     }
+
 
     public void sendMessageWithKeyboard(Message message, String text) {
 
@@ -195,8 +198,10 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+
     // transforms human-readable button caption into /command
     public String messageCommand(String message) {
+
         if(message.equals("Файл-отчет за сегодня")) {
             return "/getfile";
         }
@@ -210,8 +215,9 @@ public class Bot extends TelegramLongPollingBot {
             return "/monthfile";
         }
 
-        return "";
+        return message;
     }
+
 
     public void onUpdateReceived(Update update) {
 
@@ -282,7 +288,7 @@ public class Bot extends TelegramLongPollingBot {
                         SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
                         try {
                             Date d = parser.parse(words[1]);
-                            response = getDayFileForUpload(words[1], chat_id);
+                            response = getDayFileForUpload(folderName + "/" + words[1], chat_id);
                         }
                         catch(ParseException e) {
                             e.printStackTrace();
@@ -313,9 +319,11 @@ public class Bot extends TelegramLongPollingBot {
 
     }
 
+
     public String getBotUsername() {
         return "OrderTrackerBot_bot";
     }
+
 
     public String getBotToken() {
         return "445107190:AAGSZJHeTLrzcq2AAFGVuMn20C1xEFU6A5U";
