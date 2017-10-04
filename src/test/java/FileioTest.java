@@ -8,7 +8,7 @@ public class FileioTest {
     @Test
     public void test_write_read_file() {
         String filename = "fileio-test.txt";
-        String fileContent = "Message!";
+        String fileContent = "Message!\n";
 
         try {
             Fileio.writefile(filename, fileContent);
