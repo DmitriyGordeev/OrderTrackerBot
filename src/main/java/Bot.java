@@ -316,8 +316,6 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
-
-
     /* Updated methods: */
     public float getDaySum_db(String date) {
 
@@ -430,7 +428,7 @@ public class Bot extends TelegramLongPollingBot {
             }
             catch(ParseException e) {
                 return "Неверный формат даты\n" +
-                        "Необходимо: MM-yyyy\n" +
+                        "Необходимо: dd-MM-yyyy\n" +
                         "Например: /command 01-01-2017";
             }
         }
@@ -438,7 +436,58 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
+    public void createMonthFile(String date) throws IOException {
+        ArrayList<SaleRecord> records = database.getRecordsMonth(date);
+        String fileContent = "";
+        for(SaleRecord s : records) {
+            fileContent += s.csv("dd-MM-yyyy") + "\n";
+        }
 
+        Fileio.writefile("monthfile.csv", fileContent);
+    }
+    public String prepareMonthForUpload(Date date, long chat_id) {
+
+        String response = "";
+        try { createMonthFile(dateFormatMonth.format(date)); }
+        catch(IOException e) {
+            response = "Не удалось создать файл выгрузки\n";
+            return response;
+        }
+
+        File file = new File("monthfile.csv");
+        try {
+            sendDocUploadingAFile(chat_id, file, "Отчет за " + dateFormatMonth.format(date));
+        }
+        catch(TelegramApiException e) {
+            response = "Не удалось выгрузить файл";
+            return response;
+        }
+
+        return response;
+    }
+    public String monthFileCommand_db(String request, long chat_id) {
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1) {
+            Date today = new Date();
+            response = prepareMonthForUpload(today, chat_id);
+        }
+        else if(words.length == 2)
+        {
+            try {
+                Date date = dateFormatMonth.parse(words[1]);
+                response = prepareMonthForUpload(date, chat_id);
+            }
+            catch(ParseException e) {
+                return "Неверный формат даты\n" +
+                        "Необходимо: MM-yyyy\n" +
+                        "Например: /command 01-01-2017";
+            }
+        }
+
+        return response;
+    }
 
     /* -------------------------------------------------------------------- */
 
@@ -536,7 +585,7 @@ public class Bot extends TelegramLongPollingBot {
                 response =
                         "Приветствую!\n" +
                         "Я собираю информацию по заказам на текущий день.\n" +
-                        "Просто пишите сюда сумму продажи, например '250'";
+                        "Просто пишите сюда информацию о продаже, например 'Название услуги 250'";
             }
             else if(request.equals("/help")) {
                 response = "Доступны следующие команды:\n\n" +
@@ -553,7 +602,8 @@ public class Bot extends TelegramLongPollingBot {
 
             }
             else if(request.contains("/monthfile")) {
-                response = monthFileCommand(request, folderName, chat_id);
+                // response = monthFileCommand(request, folderName, chat_id);
+                response = monthFileCommand_db(request, chat_id);
             }
             else if(request.contains("/daysum")) {
                 // response = daysumCommand(request, folderName, table_filename_noext);

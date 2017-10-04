@@ -120,6 +120,17 @@ public class BotTest {
     // Bot.prepareForUpload() and Bot.dayFileCommand_db
 
 
+    @Test
+    public void createMonthFile_testFileExists() throws Exception {
 
+        Bot bot = new Bot();
+        bot.createMonthFile("09-2017");
+        File f = new File("monthfile.csv");
+        Assert.assertTrue(f.exists());
+    }
+
+
+    // TODO: create tests for
+    // Bot.prepareMonthForUpload() and Bot.monthFileCommand_db
 
 }
