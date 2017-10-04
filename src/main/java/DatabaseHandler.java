@@ -88,6 +88,9 @@ public class DatabaseHandler {
         if(statement == null)
             return false;
 
+        if(saleRecord == null)
+            return false;
+
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String saleDate = dateFormat.format(saleRecord.date);
 
@@ -99,7 +102,7 @@ public class DatabaseHandler {
 
         String query = "insert into sales (userId, username, message, date) values " + values;
         try {
-            ResultSet rs = statement.executeQuery(query);
+            int result = statement.executeUpdate(query);
         }
         catch(SQLException e) { return false; }
         return true;

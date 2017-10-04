@@ -137,8 +137,9 @@ public class DatabaseHandlerTest {
         saleRecord.message = "UnitTestMessage";
         saleRecord.date = new Date();
 
-        boolean iresult = databaseHandler.insertRecord(saleRecord);
-
+        Assert.assertTrue(databaseHandler.insertRecord(saleRecord));
     }
+
+
 
 }
