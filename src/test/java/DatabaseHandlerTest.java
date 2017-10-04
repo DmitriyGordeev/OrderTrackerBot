@@ -138,7 +138,7 @@ public class DatabaseHandlerTest {
         saleRecord.message = "UnitTestMessage";
         saleRecord.date = new Date();
 
-        Assert.assertTrue(databaseHandler.insertRecord(saleRecord));
+        Assert.assertEquals("Записал", databaseHandler.insertRecord(saleRecord));
     }
 
 

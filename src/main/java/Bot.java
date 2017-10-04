@@ -341,27 +341,13 @@ public class Bot extends TelegramLongPollingBot {
             }
             else {
 
-//                // check if such date-folder exists:
-//                File folder = new File(folderName);
-//                if(!folder.exists() || !folder.isDirectory())
-//                    folder.mkdir();
-//
-//                // make record into csv table:
-//                String record = userId + ";" + username + ";" + request + ";" + dateFormat.format(date) + "\n";
-//                makeRecord(folderName + "/" + table_filename_noext + ".csv", record);
-//                response = "Записал";
-
-
                 SaleRecord userInput = new SaleRecord();
                 userInput.userId = userId;
                 userInput.username = username;
                 userInput.message = request;
                 userInput.date = date;
 
-                if(database.insertRecord(userInput))
-                    response = "Записал";
-                else
-                    response = "Запись не удалась, возможно База данных отключена";
+                response = database.insertRecord(userInput);
             }
 
 

@@ -88,13 +88,13 @@ public class DatabaseHandler {
         return output;
     }
 
-    public boolean insertRecord(SaleRecord saleRecord) {
+    public String insertRecord(SaleRecord saleRecord) {
 
         if(statement == null)
-            return false;
+            return "Ошибка - База не подключена - statement error";
 
         if(saleRecord == null)
-            return false;
+            return "Ошибка - Объект записи не инициализирован";
 
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String saleDate = dateFormat.format(saleRecord.date);
@@ -109,8 +109,10 @@ public class DatabaseHandler {
         try {
             int result = statement.executeUpdate(query);
         }
-        catch(SQLException e) { return false; }
-        return true;
+        catch(SQLException e) {
+            return "statement.executeUpdate(query) - error";
+        }
+        return "Записал";
     }
 
 
