@@ -17,9 +17,14 @@ public class Main {
         // Register our bot
         try {
             botsApi.registerBot(new Bot());
-        } catch (TelegramApiException e) {
+        }
+        catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

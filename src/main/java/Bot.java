@@ -20,6 +20,20 @@ import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
 
+    private DatabaseHandler database;
+
+    public Bot() throws Exception {
+        database = new DatabaseHandler();
+
+        String url = "jdbc:mysql://mysql5.gear.host:3306/orderbot";
+        String user = "orderbot";
+        String pass = "Cc2-_M6KqMWH";
+
+        if(!database.connect(url, user, pass)) {
+            throw new Exception("unable to setup database connection");
+        }
+    }
+
     // Uploads document:
     private void sendDocUploadingAFile(Long chatId, java.io.File save,String caption) throws TelegramApiException {
 

@@ -10,7 +10,7 @@ public class BotTest {
     private String resourcesPrefixPath = "src/test/resources/";
 
     @Test
-    public void getDaySum_returnsValue() {
+    public void getDaySum_returnsValue() throws Exception {
         Bot bot = new Bot();
         try {
             Assert.assertEquals(2001, bot.getDaySum(resourcesPrefixPath + "getDaySum_test_file.csv"), 0.0001);
@@ -19,19 +19,19 @@ public class BotTest {
     }
 
     @Test
-    public void getMonthSum_notEmptyFileList() {
+    public void getMonthSum_notEmptyFileList() throws Exception {
         Bot bot = new Bot();
         Assert.assertEquals(10000, bot.getMonthSum(resourcesPrefixPath + "10-2017"), 0.001);
     }
 
     @Test
-    public void getMonthSum_emptyFileList() {
+    public void getMonthSum_emptyFileList() throws Exception {
         Bot bot = new Bot();
         Assert.assertEquals(0, bot.getMonthSum(resourcesPrefixPath + "09-2017"), 0.001);
     }
 
     @Test
-    public void reformatDate_reformatting() {
+    public void reformatDate_reformatting() throws Exception {
         Bot bot = new Bot();
         try {
 
