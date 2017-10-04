@@ -1,9 +1,14 @@
 import org.junit.Assert;
 import org.junit.Test;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.xml.bind.ParseConversionEvent;
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class BotTest {
 
@@ -102,6 +107,17 @@ public class BotTest {
     }
 
 
+    @Test
+    public void createDayFile_testFileExists() throws Exception {
+
+        Bot bot = new Bot();
+        bot.createDayFile("02-09-2017");
+        File f = new File("dayfile.csv");
+        Assert.assertTrue(f.exists());
+    }
+
+    // TODO: create tests for
+    // Bot.prepareForUpload() and Bot.dayFileCommand_db
 
 
 

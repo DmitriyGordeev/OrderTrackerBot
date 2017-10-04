@@ -385,6 +385,59 @@ public class Bot extends TelegramLongPollingBot {
         return "";
     }
 
+    public void createDayFile(String date) throws IOException {
+        ArrayList<SaleRecord> records = database.getRecords(date);
+        String fileContent = "";
+        for(SaleRecord s : records) {
+            fileContent += s.csv("dd-MM-yyyy") + "\n";
+        }
+
+        Fileio.writefile("dayfile.csv", fileContent);
+    }
+    public String prepareForUpload(Date date, long chat_id) {
+
+        String response = "";
+        try { createDayFile(dateFormat.format(date)); }
+        catch(IOException e) {
+            response = "Не удалось создать файл выгрузки\n";
+            return response;
+        }
+
+        File file = new File("dayfile.csv");
+        try {
+            sendDocUploadingAFile(chat_id, file, "Отчет за " + dateFormat.format(date));
+        }
+        catch(TelegramApiException e) {
+            response = "Не удалось выгрузить файл";
+            return response;
+        }
+
+        return response;
+    }
+    public String dayFileCommand_db(String request, long chat_id) {
+
+        String response = "";
+        String[] words = request.split("\\s+");
+        if(words.length == 1) {
+            Date today = new Date();
+            response = prepareForUpload(today, chat_id);
+        }
+        else if(words.length == 2)
+        {
+            try {
+                Date date = dateFormat.parse(words[1]);
+                response = prepareForUpload(date, chat_id);
+            }
+            catch(ParseException e) {
+                return "Неверный формат даты\n" +
+                        "Необходимо: MM-yyyy\n" +
+                        "Например: /command 01-01-2017";
+            }
+        }
+
+        return response;
+    }
+
 
 
     /* -------------------------------------------------------------------- */
@@ -511,7 +564,8 @@ public class Bot extends TelegramLongPollingBot {
                 response = monthsumCommand_db(request);
             }
             else if(request.contains("/getfile")) {
-                response = dayFileCommand(request, date, chat_id);
+                // response = dayFileCommand(request, date, chat_id);
+                response = dayFileCommand_db(request, chat_id);
             }
             else {
 
