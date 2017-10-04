@@ -2,6 +2,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class DatabaseHandlerTest {
@@ -26,6 +30,43 @@ public class DatabaseHandlerTest {
         for(SaleRecord sr : records) {
             System.out.println(sr.csv("dd-MM-yyyy"));
         }
+    }
+
+
+    @Test(expected = SQLException.class)
+    public void retreiveData_throwsException() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ResultSet resultSet = statement.executeQuery("SELECT (id) FROM sales");
+        ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
+    }
+
+
+    @Test
+    public void retreiveData_notThrowned() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM sales");
+        ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
+
+    }
+
+
+    @Test
+    public void retreiveData_daySpecified() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecords("02-09-2017");
+        for(SaleRecord sr : output) {
+            System.out.println(sr.csv("dd-MM-yyyy"));
+        }
+
     }
 
 
