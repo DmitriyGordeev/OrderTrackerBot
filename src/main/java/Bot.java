@@ -22,6 +22,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private DatabaseHandler database;
     private DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private DateFormat dateFormatMonth = new SimpleDateFormat("MM-yyyy");
 
     public Bot() throws Exception {
         database = new DatabaseHandler();
@@ -334,7 +335,6 @@ public class Bot extends TelegramLongPollingBot {
         if(words.length == 1)
         {
             Date today = new Date();
-            // TODO: such dateFormat can be Bot class field:
             return Float.toString(getDaySum_db(dateFormat.format(today)));
         }
         else if(words.length == 2) {
@@ -347,6 +347,39 @@ public class Bot extends TelegramLongPollingBot {
                 return "Неверный формат даты\n" +
                         "Необходимо: dd-MM-yyyy\n" +
                         "Например: /command 01-01-2017";
+            }
+        }
+        return "";
+    }
+
+    public float getMonthSum_db(String date) {
+
+        float outputValue = 0;
+        ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
+        for(SaleRecord s : saleRecords) {
+            outputValue += UpdateParser.parsePrice(s.message);
+        }
+
+        return outputValue;
+    }
+    public String monthsumCommand_db(String request) {
+
+        String[] words = request.split("\\s+");
+        if(words.length == 1)
+        {
+            Date today = new Date();
+            return Float.toString(getMonthSum_db(dateFormatMonth.format(today)));
+        }
+        else if(words.length == 2) {
+
+            try {
+                dateFormatMonth.parse(words[1]);
+                return "Выручка за " + words[1] + " : " + Float.toString(getMonthSum_db(words[1]));
+            }
+            catch(ParseException e) {
+                return "Неверный формат даты\n" +
+                        "Необходимо: MM-yyyy\n" +
+                        "Например: /command 01-2017";
             }
         }
         return "";
@@ -470,10 +503,12 @@ public class Bot extends TelegramLongPollingBot {
                 response = monthFileCommand(request, folderName, chat_id);
             }
             else if(request.contains("/daysum")) {
-                response = daysumCommand(request, folderName, table_filename_noext);
+                // response = daysumCommand(request, folderName, table_filename_noext);
+                response = daysumCommand_db(request);
             }
             else if(request.contains("/monthsum")) {
-                response = monthSumCommand(request, folderName);
+                // response = monthSumCommand(request, folderName);
+                response = monthsumCommand_db(request);
             }
             else if(request.contains("/getfile")) {
                 response = dayFileCommand(request, date, chat_id);

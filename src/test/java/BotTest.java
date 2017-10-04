@@ -56,8 +56,9 @@ public class BotTest {
     /* -------------------------------------------------------- */
     /* Updated methods with database: */
 
+
     @Test
-    public void getDaysum_db_test() throws Exception {
+    public void getDaySum_db_test() throws Exception {
         Bot bot = new Bot();
         Assert.assertEquals(0, bot.getDaySum_db(""), 0);
         Assert.assertEquals(0, bot.getDaySum_db("bad formatted string"), 0);
@@ -72,6 +73,31 @@ public class BotTest {
         Assert.assertTrue(response.contains("Выручка"));
 
         response = bot.daysumCommand_db("/daysum bad-formatting");
+        Assert.assertTrue(response.contains("Неверный"));
+    }
+
+
+    @Test
+    public void getMonthSum_db_test() throws Exception {
+        Bot bot = new Bot();
+        Assert.assertEquals(0, bot.getMonthSum_db(""), 0);
+        Assert.assertEquals(0, bot.getMonthSum_db("bad formatted string"), 0);
+        Assert.assertEquals(0, bot.getMonthSum_db("22-09-2017"), 0);
+        Assert.assertEquals(15000, bot.getMonthSum_db("09-2017"), 0);
+    }
+
+    @Test
+    public void monthsumCommand_db_test() throws Exception {
+        Bot bot = new Bot();
+
+        String response = bot.monthsumCommand_db("/monthsum 09-2017");
+        Assert.assertTrue(response.contains("Выручка"));
+
+        response = bot.monthsumCommand_db("/monthsum 02-09-2017");
+        Assert.assertTrue(response.contains("Выручка"));
+        System.out.println(response);
+
+        response = bot.monthsumCommand_db("/monthsum bad-formatting");
         Assert.assertTrue(response.contains("Неверный"));
     }
 
