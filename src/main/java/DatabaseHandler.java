@@ -70,8 +70,18 @@ public class DatabaseHandler {
         return output;
     }
 
+    ArrayList<SaleRecord> getRecordsMonth(String date) {
 
+        ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
+        String query = "SELECT * FROM sales where date like '%-" + date + "'";
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            output = retreiveData(resultSet);
+        }
+        catch(SQLException e) {}
 
+        return output;
+    }
 
 
 }

@@ -56,6 +56,7 @@ public class DatabaseHandlerTest {
     }
 
 
+
     @Test
     public void retreiveData_daySpecified() throws SQLException {
 
@@ -67,6 +68,61 @@ public class DatabaseHandlerTest {
             System.out.println(sr.csv("dd-MM-yyyy"));
         }
 
+    }
+
+    @Test
+    public void retreiveData_daySpecified_isEmpty_badString() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecords("bad string");
+        Assert.assertTrue(output.isEmpty());
+    }
+
+    @Test
+    public void retreiveData_daySpecified_isEmpty_emptyString() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecords("");
+        Assert.assertTrue(output.isEmpty());
+    }
+
+
+
+    @Test
+    public void retreiveData_monthSpecified() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("09-2017");
+        for(SaleRecord sr : output) {
+            System.out.println(sr.csv("dd-MM-yyyy"));
+        }
+
+    }
+
+    @Test
+    public void retreiveData_monthSpecified_isEmpty_badString() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("badString");
+        Assert.assertTrue(output.isEmpty());
+    }
+
+    @Test
+    public void retreiveData_monthSpecified_isEmpty_emptyString() throws SQLException {
+
+        Statement statement = databaseHandler.getStatement();
+        Assert.assertFalse(statement.equals(null));
+
+        ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("");
+        Assert.assertTrue(output.isEmpty());
     }
 
 
