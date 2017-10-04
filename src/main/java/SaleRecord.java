@@ -5,7 +5,7 @@ import java.util.Date;
 public class SaleRecord {
 
     int id;
-    int userId;
+    long userId;
     String username;
     String message;
     Date date;
@@ -14,7 +14,7 @@ public class SaleRecord {
 
         DateFormat dateFormat = new SimpleDateFormat(dateformat);
         return Integer.toString(id) + ";"
-                + Integer.toString(userId) + ";"
+                + Long.toString(userId) + ";"
                 + username + ";"
                 + message + ";"
                 + dateFormat.format(date);

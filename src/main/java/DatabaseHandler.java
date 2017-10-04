@@ -95,7 +95,7 @@ public class DatabaseHandler {
         String saleDate = dateFormat.format(saleRecord.date);
 
         String values = "(" +
-                Integer.toString(saleRecord.userId) + ", '" +
+                Long.toString(saleRecord.userId) + ", '" +
                 saleRecord.username + "', '" +
                 saleRecord.message + "', '" +
                 saleDate + "')";
