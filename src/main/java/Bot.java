@@ -300,16 +300,7 @@ public class Bot extends TelegramLongPollingBot {
             request = messageCommand(request);
 
             String response = "";
-
-            // Reading associated file:
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            DateFormat dateFormatDateOnly = new SimpleDateFormat("dd-MM-yyyy");
-            DateFormat dateFormatNoDay = new SimpleDateFormat("MM-yyyy");
-
             Date date = new Date();
-
-            String table_filename_noext = dateFormatDateOnly.format(date);
-            String folderName = dateFormatNoDay.format(date);
 
             // TODO: refactor to switch - case:
             if(request.equals("/start")) {
