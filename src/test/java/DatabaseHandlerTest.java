@@ -22,6 +22,7 @@ public class DatabaseHandlerTest {
         String pass = "Cc2-_M6KqMWH";
 
         databaseHandler = new DatabaseHandler();
+        databaseHandler.setTableName("sales_test");
         Assert.assertEquals(true, databaseHandler.connect(url, user, pass));
     }
 
@@ -40,7 +41,7 @@ public class DatabaseHandlerTest {
         Statement statement = databaseHandler.getStatement();
         Assert.assertFalse(statement.equals(null));
 
-        ResultSet resultSet = statement.executeQuery("SELECT (id) FROM sales");
+        ResultSet resultSet = statement.executeQuery("SELECT (id) FROM " + databaseHandler.getTableName());
         ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
     }
 
@@ -51,7 +52,7 @@ public class DatabaseHandlerTest {
         Statement statement = databaseHandler.getStatement();
         Assert.assertFalse(statement.equals(null));
 
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM sales");
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + databaseHandler.getTableName());
         ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
 
     }

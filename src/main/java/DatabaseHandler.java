@@ -9,10 +9,15 @@ public class DatabaseHandler {
 
     private Connection connection;
     private Statement  statement;
+    private String tableName = "sales_release";
 
     public Connection getConnection() { return connection; }
     public Statement getStatement() { return statement; }
 
+    public void setTableName(String tableName) { this.tableName = tableName; }
+    public String getTableName() {
+        return tableName;
+    }
 
     public boolean connect(String url, String user, String password) {
         try {
@@ -50,7 +55,7 @@ public class DatabaseHandler {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM sales");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
             output = retreiveData(resultSet);
         }
         catch(SQLException e) {}
@@ -62,7 +67,7 @@ public class DatabaseHandler {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM sales where date='" + date + "'");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName + " where date='" + date + "'");
             output = retreiveData(resultSet);
         }
         catch(SQLException e) {}
@@ -73,7 +78,7 @@ public class DatabaseHandler {
     public ArrayList<SaleRecord> getRecordsMonth(String date) {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
-        String query = "SELECT * FROM sales where date like '%-" + date + "'";
+        String query = "SELECT * FROM " + tableName + " where date like '%-" + date + "'";
         try {
             ResultSet resultSet = statement.executeQuery(query);
             output = retreiveData(resultSet);
@@ -100,7 +105,7 @@ public class DatabaseHandler {
                 saleRecord.message + "', '" +
                 saleDate + "')";
 
-        String query = "insert into sales (userId, username, message, date) values " + values;
+        String query = "insert into " + tableName + " (userId, username, message, date) values " + values;
         try {
             int result = statement.executeUpdate(query);
         }

@@ -1,4 +1,5 @@
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import sun.java2d.pipe.SpanShapeRenderer;
 
@@ -13,10 +14,16 @@ import java.util.Date;
 public class BotTest {
 
     private String resourcesPrefixPath = "src/test/resources/";
+    private Bot bot;
+
+    @Before
+    public void setupBot() throws Exception {
+        bot = new Bot("sales_test");
+    }
+
 
     @Test
     public void reformatDate_reformatting() throws Exception {
-        Bot bot = new Bot();
         try {
 
             Assert.assertEquals("10-2017",
@@ -39,7 +46,6 @@ public class BotTest {
 
     @Test
     public void getDaySum_db_test() throws Exception {
-        Bot bot = new Bot();
         Assert.assertEquals(0, bot.getDaySum_db(""), 0);
         Assert.assertEquals(0, bot.getDaySum_db("bad formatted string"), 0);
         Assert.assertEquals(5000, bot.getDaySum_db("02-09-2017"), 0);
@@ -47,7 +53,6 @@ public class BotTest {
 
     @Test
     public void daysumCommand_db_test() throws Exception {
-        Bot bot = new Bot();
 
         String response = bot.daysumCommand_db("/daysum 02-09-2017");
         Assert.assertTrue(response.contains("Выручка"));
@@ -59,7 +64,6 @@ public class BotTest {
 
     @Test
     public void getMonthSum_db_test() throws Exception {
-        Bot bot = new Bot();
         Assert.assertEquals(0, bot.getMonthSum_db(""), 0);
         Assert.assertEquals(0, bot.getMonthSum_db("bad formatted string"), 0);
         Assert.assertEquals(0, bot.getMonthSum_db("22-09-2017"), 0);
@@ -68,7 +72,6 @@ public class BotTest {
 
     @Test
     public void monthsumCommand_db_test() throws Exception {
-        Bot bot = new Bot();
 
         String response = bot.monthsumCommand_db("/monthsum 09-2017");
         Assert.assertTrue(response.contains("Выручка"));
@@ -85,7 +88,7 @@ public class BotTest {
     @Test
     public void createDayFile_testFileExists() throws Exception {
 
-        Bot bot = new Bot();
+        ;
         bot.createDayFile("02-09-2017");
         File f = new File("dayfile.csv");
         Assert.assertTrue(f.exists());
@@ -98,7 +101,7 @@ public class BotTest {
     @Test
     public void createMonthFile_testFileExists() throws Exception {
 
-        Bot bot = new Bot();
+        ;
         bot.createMonthFile("09-2017");
         File f = new File("monthfile.csv");
         Assert.assertTrue(f.exists());

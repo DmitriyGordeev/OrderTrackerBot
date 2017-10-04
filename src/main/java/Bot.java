@@ -24,8 +24,9 @@ public class Bot extends TelegramLongPollingBot {
     private DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private DateFormat dateFormatMonth = new SimpleDateFormat("MM-yyyy");
 
-    public Bot() throws Exception {
+    public Bot(String table_name) throws Exception {
         database = new DatabaseHandler();
+        database.setTableName(table_name);
 
         String url = "jdbc:mysql://mysql5.gear.host:3306/orderbot";
         String user = "orderbot";
