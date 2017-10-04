@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DatabaseHandlerTest {
 
@@ -125,5 +126,19 @@ public class DatabaseHandlerTest {
         Assert.assertTrue(output.isEmpty());
     }
 
+
+    @Test
+    public void insertRecord_returnsTrue() {
+
+        SaleRecord saleRecord = new SaleRecord();
+        saleRecord.id = 0;
+        saleRecord.userId = 13233;
+        saleRecord.username = "UnitTesting Username";
+        saleRecord.message = "UnitTestMessage";
+        saleRecord.date = new Date();
+
+        boolean iresult = databaseHandler.insertRecord(saleRecord);
+
+    }
 
 }

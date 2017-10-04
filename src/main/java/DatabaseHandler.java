@@ -83,4 +83,27 @@ public class DatabaseHandler {
         return output;
     }
 
+    public boolean insertRecord(SaleRecord saleRecord) {
+
+        if(statement == null)
+            return false;
+
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String saleDate = dateFormat.format(saleRecord.date);
+
+        String values = "(" +
+                Integer.toString(saleRecord.userId) + ", '" +
+                saleRecord.username + "', '" +
+                saleRecord.message + "', '" +
+                saleDate + "')";
+
+        String query = "insert into sales (userId, username, message, date) values " + values;
+        try {
+            ResultSet rs = statement.executeQuery(query);
+        }
+        catch(SQLException e) { return false; }
+        return true;
+    }
+
+
 }
