@@ -25,7 +25,7 @@ public class DatabaseHandler {
         return true;
     }
 
-    ArrayList<SaleRecord> retreiveData(ResultSet resultSet) throws SQLException {
+    public ArrayList<SaleRecord> retreiveData(ResultSet resultSet) throws SQLException {
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         while(resultSet.next())
         {
@@ -46,7 +46,7 @@ public class DatabaseHandler {
         return output;
     }
 
-    ArrayList<SaleRecord> getRecords() {
+    public ArrayList<SaleRecord> getRecords() {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         try {
@@ -58,7 +58,7 @@ public class DatabaseHandler {
         return output;
     }
 
-    ArrayList<SaleRecord> getRecords(String date) {
+    public ArrayList<SaleRecord> getRecords(String date) {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         try {
@@ -70,7 +70,7 @@ public class DatabaseHandler {
         return output;
     }
 
-    ArrayList<SaleRecord> getRecordsMonth(String date) {
+    public ArrayList<SaleRecord> getRecordsMonth(String date) {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
         String query = "SELECT * FROM sales where date like '%-" + date + "'";
@@ -82,6 +82,5 @@ public class DatabaseHandler {
 
         return output;
     }
-
 
 }
