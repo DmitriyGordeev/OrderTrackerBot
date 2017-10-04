@@ -21,6 +21,7 @@ import java.util.List;
 public class Bot extends TelegramLongPollingBot {
 
     private DatabaseHandler database;
+    private DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public Bot() throws Exception {
         database = new DatabaseHandler();
@@ -314,6 +315,46 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
+
+
+    /* Updated methods: */
+    public float getDaySum_db(String date) {
+
+        float outputValue = 0;
+        ArrayList<SaleRecord> saleRecords = database.getRecords(date);
+        for(SaleRecord s : saleRecords) {
+            outputValue += UpdateParser.parsePrice(s.message);
+        }
+
+        return outputValue;
+    }
+    public String daysumCommand_db(String request) {
+
+        String[] words = request.split("\\s+");
+        if(words.length == 1)
+        {
+            Date today = new Date();
+            // TODO: such dateFormat can be Bot class field:
+            return Float.toString(getDaySum_db(dateFormat.format(today)));
+        }
+        else if(words.length == 2) {
+
+            try {
+                dateFormat.parse(words[1]);
+                return "Выручка за " + words[1] + " : " + Float.toString(getDaySum_db(words[1]));
+            }
+            catch(ParseException e) {
+                return "Неверный формат даты\n" +
+                        "Необходимо: dd-MM-yyyy\n" +
+                        "Например: /command 01-01-2017";
+            }
+        }
+        return "";
+    }
+
+
+
+    /* -------------------------------------------------------------------- */
 
     private SendMessage setupKeyboard(long chat_id) {
 

@@ -5,8 +5,8 @@ public class UpdateParserTest {
 
     @Test
     public void parsePrice_returnsZero() {
-        Assert.assertEquals(-1, UpdateParser.parsePrice(""), 0.0001);
-        Assert.assertEquals(-1, UpdateParser.parsePrice("hello!"), 0.0001);
+        Assert.assertEquals(0, UpdateParser.parsePrice(""), 0.0001);
+        Assert.assertEquals(0, UpdateParser.parsePrice("hello!"), 0.0001);
     }
 
     @Test
