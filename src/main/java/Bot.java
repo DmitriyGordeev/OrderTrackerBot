@@ -259,7 +259,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public static Date convertTimeZone(Date date) {
         Calendar cal = Calendar.getInstance();
-        TimeZone tz = TimeZone.getTimeZone("UTC+003");
+        TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
         cal.setTimeZone(tz);
         cal.setTime(date);
 
@@ -370,19 +370,15 @@ public class Bot extends TelegramLongPollingBot {
 
             }
             else if(request.contains("/monthfile")) {
-                // response = monthFileCommand(request, folderName, chat_id);
                 response = monthFileCommand_db(request, chat_id);
             }
             else if(request.contains("/daysum")) {
-                // response = daysumCommand(request, folderName, table_filename_noext);
                 response = daysumCommand_db(request);
             }
             else if(request.contains("/monthsum")) {
-                // response = monthSumCommand(request, folderName);
                 response = monthsumCommand_db(request);
             }
             else if(request.contains("/getfile")) {
-                // response = dayFileCommand(request, date, chat_id);
                 response = dayFileCommand_db(request, chat_id);
             }
             else {
