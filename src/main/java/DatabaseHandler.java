@@ -7,33 +7,52 @@ import java.util.Date;
 
 public class DatabaseHandler {
 
+    private String url;
+    private String user;
+    private String password;
+    private String tablename;
+
     private Connection connection;
-    private Statement  statement;
-    private String tableName = "sales_release";
+    private Statement statement;
 
-    public Connection getConnection() { return connection; }
-    public Statement getStatement() { return statement; }
+    public DatabaseHandler(String url,
+                           String user,
+                           String password,
+                           String tablename) {
+        this.url = url;
+        this.user = user;
+        this.password = password;
+        this.tablename = tablename;
 
-    public void setTableName(String tableName) { this.tableName = tableName; }
+        connection = null;
+        statement  = null;
+    }
+
+
+    public void connect() throws SQLException {
+        connection = DriverManager.getConnection(url, user, password);
+        statement  = connection.createStatement();
+    }
+    public void close() throws SQLException {
+
+        statement.close();
+
+        if(!connection.isClosed())
+            connection.close();
+    }
+
+
+    public void setTableName(String tablename) { this.tablename = tablename; }
     public String getTableName() {
-        return tableName;
+        return tablename;
     }
+    public Connection getConnection() { return connection; }
 
-    public boolean connect(String url, String user, String password) {
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            statement  = connection.createStatement();
-        }
-        catch(SQLException e) {
-            return false;
-        }
-        return true;
-    }
 
     public ArrayList<SaleRecord> retreiveData(ResultSet resultSet) throws SQLException {
+
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
-        while(resultSet.next())
-        {
+        while(resultSet.next()) {
             SaleRecord saleRecord = new SaleRecord();
             saleRecord.id = resultSet.getInt("id");
             saleRecord.userId = resultSet.getInt("userId");
@@ -43,52 +62,61 @@ public class DatabaseHandler {
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             try {
                 saleRecord.date = dateFormat.parse(resultSet.getString("date"));
+            } catch (ParseException e) {
+                continue;
             }
-            catch(ParseException e) { continue; }
             output.add(saleRecord);
         }
 
         return output;
     }
 
-    public ArrayList<SaleRecord> getRecords() {
+    public ArrayList<SaleRecord> getRecords() throws SQLException {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
-        try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
-            output = retreiveData(resultSet);
-        }
-        catch(SQLException e) {}
+        connect();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tablename);
+        output = retreiveData(resultSet);
+
+        resultSet.close();
+        close();
 
         return output;
     }
 
-    public ArrayList<SaleRecord> getRecords(String date) {
+    public ArrayList<SaleRecord> getRecords(String date) throws SQLException {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
-        try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName + " where date='" + date + "'");
-            output = retreiveData(resultSet);
-        }
-        catch(SQLException e) {}
+        connect();
+
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tablename + " where date='" + date + "'");
+        output = retreiveData(resultSet);
+
+        resultSet.close();
+        close();
 
         return output;
     }
 
-    public ArrayList<SaleRecord> getRecordsMonth(String date) {
+    public ArrayList<SaleRecord> getRecordsMonth(String date) throws SQLException {
 
         ArrayList<SaleRecord> output = new ArrayList<SaleRecord>();
-        String query = "SELECT * FROM " + tableName + " where date like '%-" + date + "'";
-        try {
-            ResultSet resultSet = statement.executeQuery(query);
-            output = retreiveData(resultSet);
-        }
-        catch(SQLException e) {}
+        String query = "SELECT * FROM " + tablename + " where date like '%-" + date + "'";
+
+        connect();
+
+        ResultSet resultSet = statement.executeQuery(query);
+        output = retreiveData(resultSet);
+
+        resultSet.close();
+        close();
 
         return output;
     }
 
-    public String insertRecord(SaleRecord saleRecord) {
+    public String insertRecord(SaleRecord saleRecord) throws SQLException {
+
+        connect();
 
         if(statement == null)
             return "Ошибка - База не подключена - statement error";
@@ -105,13 +133,11 @@ public class DatabaseHandler {
                 saleRecord.message + "', '" +
                 saleDate + "')";
 
-        String query = "insert into " + tableName + " (userId, username, message, date) values " + values;
-        try {
-            int result = statement.executeUpdate(query);
-        }
-        catch(SQLException e) {
-            return "statement.executeUpdate(query) - error";
-        }
+        String query = "insert into " + tablename + " (userId, username, message, date) values " + values;
+        int result = statement.executeUpdate(query);
+
+        close();
+
         return "Записал";
     }
 

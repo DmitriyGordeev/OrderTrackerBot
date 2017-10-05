@@ -10,6 +10,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,17 +25,12 @@ public class Bot extends TelegramLongPollingBot {
     private DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private DateFormat dateFormatMonth = new SimpleDateFormat("MM-yyyy");
 
-    public Bot(String table_name) throws Exception {
-        database = new DatabaseHandler();
-        database.setTableName(table_name);
+    public Bot(String tablename) {
 
         String url = "jdbc:mysql://mysql5.gear.host:3306/orderbot";
         String user = "orderbot";
         String pass = "Cc2-_M6KqMWH";
-
-        if(!database.connect(url, user, pass)) {
-            throw new Exception("unable to setup database connection");
-        }
+        database = new DatabaseHandler(url, user, pass, tablename);
     }
 
     // Uploads document:
@@ -48,7 +44,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     /* Updated methods: */
-    public float getDaySum_db(String date) {
+    public float getDaySum_db(String date) throws SQLException {
 
         float outputValue = 0;
         ArrayList<SaleRecord> saleRecords = database.getRecords(date);
@@ -64,13 +60,25 @@ public class Bot extends TelegramLongPollingBot {
         if(words.length == 1)
         {
             Date today = new Date();
-            return Float.toString(getDaySum_db(dateFormat.format(today)));
+            try {
+                return Float.toString(getDaySum_db(dateFormat.format(today)));
+            }
+            catch(SQLException e) {
+                e.printStackTrace();
+                return "Проверьте подключение к базе данных";
+            }
         }
         else if(words.length == 2) {
 
             try {
                 dateFormat.parse(words[1]);
-                return "Выручка за " + words[1] + " : " + Float.toString(getDaySum_db(words[1]));
+                try {
+                    return "Выручка за " + words[1] + " : " + Float.toString(getDaySum_db(words[1]));
+                }
+                catch(SQLException e) {
+                    e.printStackTrace();
+                    return "Проверьте подключение к базе данных";
+                }
             }
             catch(ParseException e) {
                 return "Неверный формат даты\n" +
@@ -81,7 +89,7 @@ public class Bot extends TelegramLongPollingBot {
         return "";
     }
 
-    public float getMonthSum_db(String date) {
+    public float getMonthSum_db(String date) throws SQLException {
 
         float outputValue = 0;
         ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
@@ -97,13 +105,25 @@ public class Bot extends TelegramLongPollingBot {
         if(words.length == 1)
         {
             Date today = new Date();
-            return Float.toString(getMonthSum_db(dateFormatMonth.format(today)));
+            try {
+                return Float.toString(getMonthSum_db(dateFormatMonth.format(today)));
+            }
+            catch(SQLException e) {
+                e.printStackTrace();
+                return "Проверьте подключение к базе данных";
+            }
         }
         else if(words.length == 2) {
 
             try {
                 dateFormatMonth.parse(words[1]);
-                return "Выручка за " + words[1] + " : " + Float.toString(getMonthSum_db(words[1]));
+                try {
+                    return "Выручка за " + words[1] + " : " + Float.toString(getMonthSum_db(words[1]));
+                }
+                catch(SQLException e) {
+                    e.printStackTrace();
+                    return "Проверьте подключение к базе данных";
+                }
             }
             catch(ParseException e) {
                 return "Неверный формат даты\n" +
@@ -114,7 +134,7 @@ public class Bot extends TelegramLongPollingBot {
         return "";
     }
 
-    public void createDayFile(String date) throws IOException {
+    public void createDayFile(String date) throws IOException, SQLException {
         ArrayList<SaleRecord> records = database.getRecords(date);
         String fileContent = "";
         for(SaleRecord s : records) {
@@ -128,7 +148,13 @@ public class Bot extends TelegramLongPollingBot {
         String response = "";
         try { createDayFile(dateFormat.format(date)); }
         catch(IOException e) {
+            e.printStackTrace();
             response = "Не удалось создать файл выгрузки\n";
+            return response;
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+            response = "Проверьте подключение к базе данных\n";
             return response;
         }
 
@@ -167,7 +193,7 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
-    public void createMonthFile(String date) throws IOException {
+    public void createMonthFile(String date) throws IOException, SQLException {
         ArrayList<SaleRecord> records = database.getRecordsMonth(date);
         String fileContent = "";
         for(SaleRecord s : records) {
@@ -182,6 +208,11 @@ public class Bot extends TelegramLongPollingBot {
         try { createMonthFile(dateFormatMonth.format(date)); }
         catch(IOException e) {
             response = "Не удалось создать файл выгрузки\n";
+            return response;
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+            response = "Проверьте подключение к базе данных\n";
             return response;
         }
 
@@ -347,7 +378,14 @@ public class Bot extends TelegramLongPollingBot {
                 userInput.message = request;
                 userInput.date = date;
 
-                response = database.insertRecord(userInput);
+                try {
+                    response = database.insertRecord(userInput);
+                }
+                catch(SQLException e) {
+                    e.printStackTrace();
+                    response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
+                }
+
             }
 
 

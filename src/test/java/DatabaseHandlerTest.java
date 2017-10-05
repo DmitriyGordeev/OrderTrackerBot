@@ -2,10 +2,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -21,13 +18,11 @@ public class DatabaseHandlerTest {
         String user = "orderbot";
         String pass = "Cc2-_M6KqMWH";
 
-        databaseHandler = new DatabaseHandler();
-        databaseHandler.setTableName("sales_test");
-        Assert.assertEquals(true, databaseHandler.connect(url, user, pass));
+        databaseHandler = new DatabaseHandler(url, user, pass, "sales_test");
     }
 
     @Test
-    public void getRecordsNonEmpty() {
+    public void getRecordsNonEmpty() throws SQLException {
         ArrayList<SaleRecord> records = databaseHandler.getRecords();
         for(SaleRecord sr : records) {
             System.out.println(sr.csv("dd-MM-yyyy"));
@@ -35,101 +30,79 @@ public class DatabaseHandlerTest {
     }
 
 
+
     @Test(expected = SQLException.class)
     public void retreiveData_throwsException() throws SQLException {
 
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
+        Connection connection = databaseHandler.getConnection();
+        Statement  statement  = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT (id) FROM " + databaseHandler.getTableName());
-        ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
-    }
 
+        // this method should throw and SQLException
+        // then test will be passed
+        ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
+
+        resultSet.close();
+        databaseHandler.close();
+    }
 
     @Test
     public void retreiveData_notThrowned() throws SQLException {
 
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
+        Connection connection = databaseHandler.getConnection();
+        Statement  statement  = connection.createStatement();
 
         ResultSet resultSet = statement.executeQuery("SELECT * FROM " + databaseHandler.getTableName());
         ArrayList<SaleRecord> output = databaseHandler.retreiveData(resultSet);
 
+        resultSet.close();
+        databaseHandler.close();
     }
-
-
 
     @Test
     public void retreiveData_daySpecified() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecords("02-09-2017");
         for(SaleRecord sr : output) {
             System.out.println(sr.csv("dd-MM-yyyy"));
         }
-
     }
 
     @Test
     public void retreiveData_daySpecified_isEmpty_badString() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecords("bad string");
         Assert.assertTrue(output.isEmpty());
     }
 
     @Test
     public void retreiveData_daySpecified_isEmpty_emptyString() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecords("");
         Assert.assertTrue(output.isEmpty());
     }
 
-
-
     @Test
     public void retreiveData_monthSpecified() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("09-2017");
         for(SaleRecord sr : output) {
             System.out.println(sr.csv("dd-MM-yyyy"));
         }
-
+        Assert.assertFalse(output.isEmpty());
     }
 
     @Test
     public void retreiveData_monthSpecified_isEmpty_badString() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("badString");
         Assert.assertTrue(output.isEmpty());
     }
 
     @Test
     public void retreiveData_monthSpecified_isEmpty_emptyString() throws SQLException {
-
-        Statement statement = databaseHandler.getStatement();
-        Assert.assertFalse(statement.equals(null));
-
         ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("");
         Assert.assertTrue(output.isEmpty());
     }
 
 
     @Test
-    public void insertRecord_returnsTrue() {
+    public void insertRecord_returnsTrue() throws SQLException {
 
         SaleRecord saleRecord = new SaleRecord();
         saleRecord.id = 0;
@@ -140,7 +113,5 @@ public class DatabaseHandlerTest {
 
         Assert.assertEquals("Записал", databaseHandler.insertRecord(saleRecord));
     }
-
-
 
 }
