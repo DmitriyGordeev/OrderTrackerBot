@@ -34,6 +34,8 @@ public class DatabaseHandlerTest {
     @Test(expected = SQLException.class)
     public void retreiveData_throwsException() throws SQLException {
 
+        databaseHandler.connect();
+
         Connection connection = databaseHandler.getConnection();
         Statement  statement  = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT (id) FROM " + databaseHandler.getTableName());
@@ -48,6 +50,8 @@ public class DatabaseHandlerTest {
 
     @Test
     public void retreiveData_notThrowned() throws SQLException {
+
+        databaseHandler.connect();
 
         Connection connection = databaseHandler.getConnection();
         Statement  statement  = connection.createStatement();
