@@ -257,14 +257,6 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
-    public static Date convertTimeZone(Date date) {
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
-        cal.setTimeZone(tz);
-        cal.setTime(date);
-
-        return cal.getTime();
-    }
 
     /* -------------------------------------------------------------------- */
 
@@ -346,7 +338,9 @@ public class Bot extends TelegramLongPollingBot {
             request = messageCommand(request);
 
             String response = "";
-            Date date = convertTimeZone(new Date());
+            Date date = new Date();
+            date.setTime(date.getTime() + 1000 * 3600 * 3);
+
 
             // TODO: refactor to switch - case:
             if(request.equals("/start")) {
