@@ -14,9 +14,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 public class Bot extends TelegramLongPollingBot {
@@ -43,7 +41,6 @@ public class Bot extends TelegramLongPollingBot {
         sendDocument(sendDocumentRequest);
     }
 
-    /* Updated methods: */
     public float getDaySum_db(String date) throws SQLException {
 
         float outputValue = 0;
@@ -260,6 +257,15 @@ public class Bot extends TelegramLongPollingBot {
         return response;
     }
 
+    public static Date convertTimeZone(Date date) {
+        Calendar cal = Calendar.getInstance();
+        TimeZone tz = TimeZone.getTimeZone("UTC+003");
+        cal.setTimeZone(tz);
+        cal.setTime(date);
+
+        return cal.getTime();
+    }
+
     /* -------------------------------------------------------------------- */
 
     private SendMessage setupKeyboard(long chat_id) {
@@ -340,7 +346,7 @@ public class Bot extends TelegramLongPollingBot {
             request = messageCommand(request);
 
             String response = "";
-            Date date = new Date();
+            Date date = convertTimeZone(new Date());
 
             // TODO: refactor to switch - case:
             if(request.equals("/start")) {

@@ -10,7 +10,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class BotTest {
 
@@ -107,5 +109,16 @@ public class BotTest {
 
     // TODO: create tests for
     // Bot.prepareMonthForUpload() and Bot.monthFileCommand_db
+
+
+    @Test
+    public void convertTimeZone_testTimezone() {
+
+        Date date = new Date();
+        date = Bot.convertTimeZone(date);
+        System.out.println("current time: "
+                + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss Z").format(date));
+
+    }
 
 }
