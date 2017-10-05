@@ -124,7 +124,7 @@ public class DatabaseHandler {
         if(saleRecord == null)
             return "Ошибка - Объект записи не инициализирован";
 
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss Z");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String saleDate = dateFormat.format(saleRecord.date);
 
         String values = "(" +
