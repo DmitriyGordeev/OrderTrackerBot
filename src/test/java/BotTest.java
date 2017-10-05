@@ -111,14 +111,4 @@ public class BotTest {
     // Bot.prepareMonthForUpload() and Bot.monthFileCommand_db
 
 
-    @Test
-    public void convertTimeZone_testTimezone() {
-
-        Date date = new Date();
-        date = Bot.convertTimeZone(date);
-        System.out.println("current time: "
-                + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss Z").format(date));
-
-    }
-
 }
