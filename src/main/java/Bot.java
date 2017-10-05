@@ -135,6 +135,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void createDayFile(String date) throws IOException, SQLException {
+
         ArrayList<SaleRecord> records = database.getRecords(date);
         String fileContent = "";
         for(SaleRecord s : records) {
@@ -158,13 +159,17 @@ public class Bot extends TelegramLongPollingBot {
             return response;
         }
 
+
         File file = new File("dayfile.csv");
+        if(!file.exists()) {
+            return "На " + dateFormat.format(date) + " записей нет";
+        }
+
         try {
             sendDocUploadingAFile(chat_id, file, "Отчет за " + dateFormat.format(date));
         }
         catch(TelegramApiException e) {
-            response = "Не удалось выгрузить файл";
-            return response;
+            response = "На " + dateFormat.format(date) + " записей нет";
         }
 
         return response;
@@ -217,12 +222,16 @@ public class Bot extends TelegramLongPollingBot {
         }
 
         File file = new File("monthfile.csv");
+        if(!file.exists()) {
+            return "На " + dateFormatMonth.format(date) + " записей нет";
+        }
+
+
         try {
             sendDocUploadingAFile(chat_id, file, "Отчет за " + dateFormatMonth.format(date));
         }
         catch(TelegramApiException e) {
-            response = "Не удалось выгрузить файл";
-            return response;
+            return "На " + dateFormatMonth.format(date) + " записей нет";
         }
 
         return response;
