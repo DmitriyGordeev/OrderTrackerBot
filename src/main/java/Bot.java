@@ -339,8 +339,6 @@ public class Bot extends TelegramLongPollingBot {
 
             String response = "";
             Date date = new Date();
-            date.setTime(date.getTime() + 1000 * 3600 * 3);
-
 
             // TODO: refactor to switch - case:
             if(request.equals("/start")) {
