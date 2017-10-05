@@ -6,7 +6,7 @@ public class UpdateParser {
 
     public static float parsePrice(String str) {
 
-        String regex = "[0-9]+(\\.[0-9]+)?";
+        String regex = "[0-9]+((\\.|,)[0-9]+)?";
         Matcher m = Pattern.compile(regex).matcher(str);
 
         ArrayList<String> matches = new ArrayList<String>();
@@ -16,7 +16,8 @@ public class UpdateParser {
         if(!matches.isEmpty())
         {
             try {
-                return Float.parseFloat(matches.get(0));
+                String match = matches.get(0);
+                return Float.parseFloat(match.replace(",", "."));
             }
             catch(NumberFormatException e) {
                 e.printStackTrace();
