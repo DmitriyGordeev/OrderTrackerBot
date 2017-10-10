@@ -8,6 +8,7 @@ public class SaleRecord {
     long userId;
     String username;
     String message;
+    float value;
     Date date;
 
     public String csv(String dateformat) {
@@ -17,6 +18,7 @@ public class SaleRecord {
                 + Long.toString(userId) + ";"
                 + username + ";"
                 + message + ";"
+                + Float.toString(value) + ";"
                 + dateFormat.format(date);
     }
 }

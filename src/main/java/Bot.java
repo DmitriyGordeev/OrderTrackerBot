@@ -388,6 +388,7 @@ public class Bot extends TelegramLongPollingBot {
                 userInput.userId = userId;
                 userInput.username = username;
                 userInput.message = request;
+                userInput.value = value;
                 userInput.date = date;
 
                 try {

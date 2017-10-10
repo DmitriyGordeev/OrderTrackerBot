@@ -113,6 +113,7 @@ public class DatabaseHandlerTest {
         saleRecord.userId = 13233;
         saleRecord.username = "UnitTesting Username";
         saleRecord.message = "UnitTestMessage";
+        saleRecord.value = 11219;
         saleRecord.date = new Date();
 
         Assert.assertEquals("Записал", databaseHandler.insertRecord(saleRecord));

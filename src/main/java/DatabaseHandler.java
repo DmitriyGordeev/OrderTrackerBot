@@ -58,6 +58,7 @@ public class DatabaseHandler {
             saleRecord.userId = resultSet.getInt("userId");
             saleRecord.username = resultSet.getString("username");
             saleRecord.message = resultSet.getString("message");
+            saleRecord.value = resultSet.getFloat("value");
 
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             try {
@@ -130,10 +131,11 @@ public class DatabaseHandler {
         String values = "(" +
                 Long.toString(saleRecord.userId) + ", '" +
                 saleRecord.username + "', '" +
-                saleRecord.message + "', '" +
+                saleRecord.message + "', " +
+                Float.toString(saleRecord.value) + ", '" +
                 saleDate + "')";
 
-        String query = "insert into " + tablename + " (userId, username, message, date) values " + values;
+        String query = "insert into " + tablename + " (userId, username, message, value, date) values " + values;
         int result = statement.executeUpdate(query);
 
         close();
