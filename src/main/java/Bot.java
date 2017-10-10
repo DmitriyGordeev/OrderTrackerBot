@@ -21,6 +21,9 @@ public class Bot extends TelegramLongPollingBot {
     private DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private DateFormat dateFormatMonth = new SimpleDateFormat("MM-yyyy");
 
+    private boolean questionState = false;
+    private SaleRecord stateSave = null;
+
     public Bot(String tablename) {
 
         String url = "jdbc:mysql://mysql5.gear.host:3306/orderbot";
@@ -42,10 +45,10 @@ public class Bot extends TelegramLongPollingBot {
     public float getDaySum_db(String date) throws SQLException {
 
         float outputValue = 0;
-        ArrayList<SaleRecord> saleRecords = database.getRecords(date);
-        for(SaleRecord s : saleRecords) {
-            outputValue += UpdateParser.findNumerics(s.message);
-        }
+//        ArrayList<SaleRecord> saleRecords = database.getRecords(date);
+//        for(SaleRecord s : saleRecords) {
+//            outputValue += UpdateParser.findNumerics(s.message);
+//        }
 
         return outputValue;
     }
@@ -87,10 +90,10 @@ public class Bot extends TelegramLongPollingBot {
     public float getMonthSum_db(String date) throws SQLException {
 
         float outputValue = 0;
-        ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
-        for(SaleRecord s : saleRecords) {
-            outputValue += UpdateParser.findNumerics(s.message);
-        }
+//        ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
+//        for(SaleRecord s : saleRecords) {
+//            outputValue += UpdateParser.findNumerics(s.message);
+//        }
 
         return outputValue;
     }
@@ -338,6 +341,48 @@ public class Bot extends TelegramLongPollingBot {
             String response = "";
             Date date = new Date();
 
+
+            if(questionState) {
+
+                float value = 0;
+                try {
+                    value = UpdateParser.findNumerics(request);
+                    questionState = false;
+                    stateSave.value = value;
+
+                    // do record:"
+                    try {
+                        response = database.insertRecord(stateSave);
+                    }
+                    catch(SQLException e) {
+                        e.printStackTrace();
+                        response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
+                    }
+
+                    sendMessage.setText(response);
+                    try {
+                        sendMessage(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                catch(Exception exc) {
+
+                    exc.printStackTrace();
+                    response = "Какую сумму составила продажа?\n Просто число, напр. \"250\"";
+                    sendMessage.setText(response);
+                    try {
+                        sendMessage(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+
+                    return;
+                }
+            }
+
+
             // TODO: refactor to switch - case:
             if(request.equals("/start")) {
                 response =
@@ -373,15 +418,16 @@ public class Bot extends TelegramLongPollingBot {
             }
             else {
 
+
                 float value = 0;
                 try {
                     value = UpdateParser.parsePrice(request);
                 }
                 catch(Exception e) {
                     e.printStackTrace();
-
+                    response = "Какую сумму составила продажа?\n Просто число, напр. \"250\"";
+                    questionState = true;
                 }
-
 
 
                 SaleRecord userInput = new SaleRecord();
@@ -391,13 +437,18 @@ public class Bot extends TelegramLongPollingBot {
                 userInput.value = value;
                 userInput.date = date;
 
-                try {
-                    response = database.insertRecord(userInput);
+                stateSave = userInput;
+
+                if(!questionState) {
+                    try {
+                        response = database.insertRecord(userInput);
+                    }
+                    catch(SQLException e) {
+                        e.printStackTrace();
+                        response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
+                    }
                 }
-                catch(SQLException e) {
-                    e.printStackTrace();
-                    response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
-                }
+
 
             }
 

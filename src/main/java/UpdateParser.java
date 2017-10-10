@@ -25,7 +25,7 @@ public class UpdateParser {
         return value;
     }
 
-    public static float findNumerics(String str) {
+    public static float findNumerics(String str) throws Exception {
 
         String regex = "[0-9]+((\\.|,)[0-9]+)?";
         Matcher m = Pattern.compile(regex).matcher(str);
@@ -34,18 +34,13 @@ public class UpdateParser {
         while (m.find())
             matches.add(m.group(0));
 
-        if(!matches.isEmpty())
-        {
-            try {
-                String match = matches.get(0);
-                return Float.parseFloat(match.replace(",", "."));
-            }
-            catch(NumberFormatException e) {
-                e.printStackTrace();
-            }
+        if(!matches.isEmpty()) {
+            String match = matches.get(0);
+            return Float.parseFloat(match.replace(",", "."));
         }
-
-        return 0;
+        else {
+            throw new Exception("matches are not found");
+        }
     }
 
 }

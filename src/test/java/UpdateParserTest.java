@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 public class UpdateParserTest {
 
     @Test
-    public void parsePrice_returnsZero() {
+    public void parsePrice_returnsZero() throws Exception {
         Assert.assertEquals(0, UpdateParser.findNumerics(""), 0.0001);
         Assert.assertEquals(0, UpdateParser.findNumerics("hello!"), 0.0001);
     }
 
     @Test
-    public void parsePrice_returnsNumber_dot() {
+    public void parsePrice_returnsNumber_dot() throws Exception {
         Assert.assertEquals(0, UpdateParser.findNumerics("Hello 0"), 0.0001);
         Assert.assertEquals(100, UpdateParser.findNumerics("hello 100"), 0.0001);
         Assert.assertEquals(12.56, UpdateParser.findNumerics("hello 12.56"), 0.0001);
@@ -23,7 +23,7 @@ public class UpdateParserTest {
     }
 
     @Test
-    public void parsePrice_returnsNumber_comma() {
+    public void parsePrice_returnsNumber_comma() throws Exception {
         Assert.assertEquals(100, UpdateParser.findNumerics("hello 100"), 0.0001);
         Assert.assertEquals(12.56, UpdateParser.findNumerics("hello 12,56"), 0.0001);
         Assert.assertEquals(12.56, UpdateParser.findNumerics("12,56"), 0.0001);

@@ -29,8 +29,6 @@ public class DatabaseHandlerTest {
         }
     }
 
-
-
     @Test(expected = SQLException.class)
     public void retreiveData_throwsException() throws SQLException {
 
@@ -103,7 +101,6 @@ public class DatabaseHandlerTest {
         ArrayList<SaleRecord> output = databaseHandler.getRecordsMonth("");
         Assert.assertTrue(output.isEmpty());
     }
-
 
     @Test
     public void insertRecord_returnsTrue() throws SQLException {
