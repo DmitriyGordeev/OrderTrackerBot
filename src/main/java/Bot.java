@@ -1,7 +1,5 @@
-import org.apache.commons.io.FileUtils;
 import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -46,7 +44,7 @@ public class Bot extends TelegramLongPollingBot {
         float outputValue = 0;
         ArrayList<SaleRecord> saleRecords = database.getRecords(date);
         for(SaleRecord s : saleRecords) {
-            outputValue += UpdateParser.parsePrice(s.message);
+            outputValue += UpdateParser.findNumerics(s.message);
         }
 
         return outputValue;
@@ -91,7 +89,7 @@ public class Bot extends TelegramLongPollingBot {
         float outputValue = 0;
         ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
         for(SaleRecord s : saleRecords) {
-            outputValue += UpdateParser.parsePrice(s.message);
+            outputValue += UpdateParser.findNumerics(s.message);
         }
 
         return outputValue;
@@ -374,6 +372,17 @@ public class Bot extends TelegramLongPollingBot {
                 response = dayFileCommand_db(request, chat_id);
             }
             else {
+
+                float value = 0;
+                try {
+                    value = UpdateParser.parsePrice(request);
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+
+                }
+
+
 
                 SaleRecord userInput = new SaleRecord();
                 userInput.userId = userId;
