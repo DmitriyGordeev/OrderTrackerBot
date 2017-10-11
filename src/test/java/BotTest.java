@@ -48,16 +48,16 @@ public class BotTest {
 
 
     @Test
-    public void getDaySum_db_test() throws SQLException {
+    public void getDaySum_db_test() throws Exception {
         Assert.assertEquals(0, bot.getDaySum_db(""), 0);
         Assert.assertEquals(0, bot.getDaySum_db("bad formatted string"), 0);
-        Assert.assertEquals(5000, bot.getDaySum_db("02-09-2017"), 0);
+        Assert.assertEquals(11219 * 2, bot.getDaySum_db("10-10-2017"), 0);
     }
 
     @Test
     public void daysumCommand_db_test() {
 
-        String response = bot.daysumCommand_db("/daysum 02-09-2017");
+        String response = bot.daysumCommand_db("/daysum 10-10-2017");
         Assert.assertTrue(response.contains("Выручка"));
 
         response = bot.daysumCommand_db("/daysum bad-formatting");
@@ -66,15 +66,15 @@ public class BotTest {
 
 
     @Test
-    public void getMonthSum_db_test() throws SQLException {
+    public void getMonthSum_db_test() throws Exception {
         Assert.assertEquals(0, bot.getMonthSum_db(""), 0);
         Assert.assertEquals(0, bot.getMonthSum_db("bad formatted string"), 0);
-        Assert.assertEquals(0, bot.getMonthSum_db("22-09-2017"), 0);
-        Assert.assertEquals(15000, bot.getMonthSum_db("09-2017"), 0);
+        Assert.assertEquals(0, bot.getMonthSum_db("10-10-2017"), 0);
+        Assert.assertEquals(11219 * 2, bot.getMonthSum_db("10-2017"), 0);
     }
 
     @Test
-    public void monthsumCommand_db_test() throws SQLException {
+    public void monthsumCommand_db_test() throws Exception {
 
         String response = bot.monthsumCommand_db("/monthsum 09-2017");
         Assert.assertTrue(response.contains("Выручка"));

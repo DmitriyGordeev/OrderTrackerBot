@@ -42,13 +42,13 @@ public class Bot extends TelegramLongPollingBot {
         sendDocument(sendDocumentRequest);
     }
 
-    public float getDaySum_db(String date) throws SQLException {
+    public float getDaySum_db(String date) throws Exception {
 
         float outputValue = 0;
-//        ArrayList<SaleRecord> saleRecords = database.getRecords(date);
-//        for(SaleRecord s : saleRecords) {
-//            outputValue += UpdateParser.findNumerics(s.message);
-//        }
+        ArrayList<SaleRecord> saleRecords = database.getRecords(date);
+        for(SaleRecord s : saleRecords) {
+            outputValue += s.value;
+        }
 
         return outputValue;
     }
@@ -61,7 +61,7 @@ public class Bot extends TelegramLongPollingBot {
             try {
                 return Float.toString(getDaySum_db(dateFormat.format(today)));
             }
-            catch(SQLException e) {
+            catch(Exception e) {
                 e.printStackTrace();
                 return "Проверьте подключение к базе данных";
             }
@@ -73,7 +73,7 @@ public class Bot extends TelegramLongPollingBot {
                 try {
                     return "Выручка за " + words[1] + " : " + Float.toString(getDaySum_db(words[1]));
                 }
-                catch(SQLException e) {
+                catch(Exception e) {
                     e.printStackTrace();
                     return "Проверьте подключение к базе данных";
                 }
@@ -87,13 +87,13 @@ public class Bot extends TelegramLongPollingBot {
         return "";
     }
 
-    public float getMonthSum_db(String date) throws SQLException {
+    public float getMonthSum_db(String date) throws Exception {
 
         float outputValue = 0;
-//        ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
-//        for(SaleRecord s : saleRecords) {
-//            outputValue += UpdateParser.findNumerics(s.message);
-//        }
+        ArrayList<SaleRecord> saleRecords = database.getRecordsMonth(date);
+        for(SaleRecord s : saleRecords) {
+            outputValue += s.value;
+        }
 
         return outputValue;
     }
@@ -106,7 +106,7 @@ public class Bot extends TelegramLongPollingBot {
             try {
                 return Float.toString(getMonthSum_db(dateFormatMonth.format(today)));
             }
-            catch(SQLException e) {
+            catch(Exception e) {
                 e.printStackTrace();
                 return "Проверьте подключение к базе данных";
             }
@@ -118,7 +118,7 @@ public class Bot extends TelegramLongPollingBot {
                 try {
                     return "Выручка за " + words[1] + " : " + Float.toString(getMonthSum_db(words[1]));
                 }
-                catch(SQLException e) {
+                catch(Exception e) {
                     e.printStackTrace();
                     return "Проверьте подключение к базе данных";
                 }
