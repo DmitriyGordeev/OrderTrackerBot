@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 public class UpdateParserTest {
 
-    @Test
-    public void parsePrice_returnsZero() throws Exception {
+    @Test(expected = Exception.class)
+    public void parsePrice_throwsException() throws Exception {
         Assert.assertEquals(0, UpdateParser.findNumerics(""), 0.0001);
         Assert.assertEquals(0, UpdateParser.findNumerics("hello!"), 0.0001);
     }
