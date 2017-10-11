@@ -96,7 +96,6 @@ public class BotTest {
     }
 
     // TODO: create tests for
-    // Bot.prepareForUpload() and Bot.dayFileCommand_db
 
 
     @Test
