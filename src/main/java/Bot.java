@@ -259,6 +259,18 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    // sends message to user:
+    public void sendCustomMessage(String message, long chat_id) {
+
+        SendMessage sm = setupKeyboard(chat_id);
+        sm.setText(message);
+        try {
+            sendMessage(sm);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     /* -------------------------------------------------------------------- */
 
     private SendMessage setupKeyboard(long chat_id) {
@@ -335,20 +347,19 @@ public class Bot extends TelegramLongPollingBot {
             long userId   = update.getMessage().getChat().getId();
             long chat_id = update.getMessage().getChatId();
 
-            SendMessage sendMessage = setupKeyboard(chat_id);
             request = messageCommand(request);
-
             String response = "";
             Date date = new Date();
 
 
-            if(questionState) {
+            if(questionState && stateSave != null) {
 
                 float value = 0;
                 try {
                     value = UpdateParser.findNumerics(request);
-                    questionState = false;
                     stateSave.value = value;
+                    questionState = false;
+
 
                     // do record:"
                     try {
@@ -359,24 +370,15 @@ public class Bot extends TelegramLongPollingBot {
                         response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
                     }
 
-                    sendMessage.setText(response);
-                    try {
-                        sendMessage(sendMessage);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-
+                    sendCustomMessage(response, chat_id);
+                    stateSave = null;
+                    return;
                 }
                 catch(Exception exc) {
 
                     exc.printStackTrace();
                     response = "Какую сумму составила продажа?\n Просто число, напр. \"250\"";
-                    sendMessage.setText(response);
-                    try {
-                        sendMessage(sendMessage);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+                    sendCustomMessage(response, chat_id);
 
                     return;
                 }
@@ -418,47 +420,39 @@ public class Bot extends TelegramLongPollingBot {
             }
             else {
 
+                SaleRecord userInput = new SaleRecord();
+                userInput.userId = userId;
+                userInput.username = username;
+                userInput.message = request;
+                userInput.value = 0;
+                userInput.date = date;
 
-                float value = 0;
+
                 try {
-                    value = UpdateParser.parsePrice(request);
+                    userInput.value = UpdateParser.parsePrice(request);
                 }
                 catch(Exception e) {
                     e.printStackTrace();
                     response = "Какую сумму составила продажа?\n Просто число, напр. \"250\"";
                     questionState = true;
+                    stateSave = userInput;
+
+                    sendCustomMessage(response, chat_id);
+                    return;
                 }
 
 
-                SaleRecord userInput = new SaleRecord();
-                userInput.userId = userId;
-                userInput.username = username;
-                userInput.message = request;
-                userInput.value = value;
-                userInput.date = date;
-
-                stateSave = userInput;
-
-                if(!questionState) {
-                    try {
-                        response = database.insertRecord(userInput);
-                    }
-                    catch(SQLException e) {
-                        e.printStackTrace();
-                        response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
-                    }
+                try {
+                    response = database.insertRecord(userInput);
                 }
-
-
+                catch(SQLException e) {
+                    e.printStackTrace();
+                    response = "Ввести значение не удалось, нужно проверить подключение к базе данных";
+                }
             }
 
 
-            sendMessage.setText(response);
-            try {
-                sendMessage(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            sendCustomMessage(response, chat_id);
         }
 
     }
