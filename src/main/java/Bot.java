@@ -22,7 +22,7 @@ public class Bot extends TelegramLongPollingBot {
     private DateFormat dateFormatMonth = new SimpleDateFormat("MM-yyyy");
 
     private boolean questionState = false;
-    private SaleRecord stateSave = null;
+    private SaleRecord savedState = null;
 
     public Bot(String tablename) {
 
@@ -87,6 +87,7 @@ public class Bot extends TelegramLongPollingBot {
         return "";
     }
 
+
     public float getMonthSum_db(String date) throws Exception {
 
         float outputValue = 0;
@@ -131,6 +132,7 @@ public class Bot extends TelegramLongPollingBot {
         }
         return "";
     }
+
 
     public void createDayFile(String date) throws IOException, SQLException {
 
@@ -195,6 +197,7 @@ public class Bot extends TelegramLongPollingBot {
 
         return response;
     }
+
 
     public void createMonthFile(String date) throws IOException, SQLException {
         ArrayList<SaleRecord> records = database.getRecordsMonth(date);
@@ -352,18 +355,16 @@ public class Bot extends TelegramLongPollingBot {
             Date date = new Date();
 
 
-            if(questionState && stateSave != null) {
+            if(questionState && savedState != null) {
 
                 float value = 0;
                 try {
                     value = UpdateParser.findNumerics(request);
-                    stateSave.value = value;
+                    savedState.value = value;
                     questionState = false;
 
-
-                    // do record:"
                     try {
-                        response = database.insertRecord(stateSave);
+                        response = database.insertRecord(savedState);
                     }
                     catch(SQLException e) {
                         e.printStackTrace();
@@ -371,7 +372,7 @@ public class Bot extends TelegramLongPollingBot {
                     }
 
                     sendCustomMessage(response, chat_id);
-                    stateSave = null;
+                    savedState = null;
                     return;
                 }
                 catch(Exception exc) {
@@ -403,9 +404,6 @@ public class Bot extends TelegramLongPollingBot {
                         "/monthfile - файл-отчет по текущему месяцу\n\n" +
                         "/monthfile 09-2017 - файл-отчет за указаный месяц\n\n";
             }
-            else if(request.equals("/settings")) {
-
-            }
             else if(request.contains("/monthfile")) {
                 response = monthFileCommand_db(request, chat_id);
             }
@@ -433,9 +431,9 @@ public class Bot extends TelegramLongPollingBot {
                 }
                 catch(Exception e) {
                     e.printStackTrace();
-                    response = "Какую сумму составила продажа?\n Просто число, напр. \"250\"";
+                    response = "Какую сумму составила продажа?\n Введите число, напр. \"250\"";
                     questionState = true;
-                    stateSave = userInput;
+                    savedState = userInput;
 
                     sendCustomMessage(response, chat_id);
                     return;
