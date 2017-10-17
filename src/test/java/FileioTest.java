@@ -1,7 +1,10 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 public class FileioTest {
 
@@ -27,6 +30,17 @@ public class FileioTest {
         System.out.println("actual: " + content);
 
         Assert.assertEquals(fileContent, content);
+    }
+
+    @Test
+    public void correctEncoding() throws FileNotFoundException,
+            UnsupportedEncodingException {
+
+        String filename = "encoding-test.txt";
+
+        PrintWriter writer = new PrintWriter(filename, "cp1251");
+        writer.print("русские символы здесь!");
+        writer.close();
     }
 
 }

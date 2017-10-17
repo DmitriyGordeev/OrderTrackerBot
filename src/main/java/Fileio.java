@@ -23,7 +23,7 @@ public class Fileio {
 
     public static void writefile(String filename, String content) throws IOException {
 
-        PrintWriter writer = new PrintWriter(filename, "UTF-8");
+        PrintWriter writer = new PrintWriter(filename, "cp1251");
         writer.print(content);
         writer.close();
     }
